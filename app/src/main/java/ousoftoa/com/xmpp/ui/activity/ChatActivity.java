@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -144,12 +145,9 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
         mIvAudio.setOnClickListener( v -> {
             if (mBtnAudio.isShown()) {
                 hideAudioButton();
-                mEtContent.requestFocus();
-                if (mEmotionKeyboard != null) {
-                    mEmotionKeyboard.showSoftInput();
-                }
+                mEmotionKeyboard.showSoftInput();
             } else {
-                mEtContent.clearFocus();
+                mEmotionKeyboard.hideSoftInput();
                 showAudioButton();
                 hideEmotionLayout();
                 hideMoreLayout();
@@ -173,11 +171,6 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                     break;
             }
             return false;
-        } );
-        mEtContent.setOnFocusChangeListener( (v, hasFocus) -> {
-            if (hasFocus) {
-                hideEmotionLayout();
-            }
         } );
         mEtContent.setOnClickListener( view -> mRvChat.smoothScrollToPosition( mData.size() ) );
         RxTextView.textChangeEvents( mEtContent ).subscribe( event -> {
@@ -208,7 +201,14 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
 
     private void initToobar() {
         mTvTitle.setText( mfriend.getNickname() );
-        mImBack.setOnClickListener( view -> finish() );
+        mImBack.setOnClickListener( view -> {
+            if (mElEmotion.isShown() || mLlMore.isShown()) {
+                mEmotionKeyboard.interceptBackPress();
+                mIvEmo.setImageResource(R.mipmap.ic_cheat_emo);
+            }else {
+                finish();
+            }
+        } );
         mImRight.setOnClickListener( view -> showTip( "friend" ) );
     }
 
@@ -339,6 +339,19 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
         } );
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK ) {
+            if (mElEmotion.isShown() || mLlMore.isShown()) {
+                mEmotionKeyboard.interceptBackPress();
+                mIvEmo.setImageResource(R.mipmap.ic_cheat_emo);
+            }else {
+                finish();
+            }
+        }
+        return false;
+    }
+
     private void initEmotionKeyboard() {
         mEmotionKeyboard = EmotionKeyboard.with( this );
         mEmotionKeyboard.bindToEditText( mEtContent );
@@ -348,7 +361,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
         mEmotionKeyboard.setOnEmotionButtonOnClickListener( view -> {
             switch (view.getId()) {
                 case R.id.ivEmo:
-//                    mRvChat.smoothScrollToPosition( mData.size() );
+                    mRvChat.smoothScrollToPosition( mData.size() );
                     mEtContent.clearFocus();
                     if (!mElEmotion.isShown()) {
                         if (mLlMore.isShown()) {
@@ -366,7 +379,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                     hideAudioButton();
                     break;
                 case R.id.ivMore:
-//                    mRvChat.smoothScrollToPosition( mData.size() );
+                    mRvChat.smoothScrollToPosition( mData.size() );
                     mEtContent.clearFocus();
                     if (!mLlMore.isShown()) {
                         if (mElEmotion.isShown()) {
@@ -429,6 +442,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
         mElEmotion.setVisibility( View.GONE );
         mLlMore.setVisibility( View.GONE );
         if (mEmotionKeyboard != null) {
+            mEmotionKeyboard.hideSoftInput();
             mEmotionKeyboard.interceptBackPress();
             mIvEmo.setImageResource( R.mipmap.ic_cheat_emo );
         }

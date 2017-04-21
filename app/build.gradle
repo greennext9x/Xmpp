@@ -69,7 +69,7 @@ dependencies {
     //转场动画
     compile 'me.immortalz:transitionhelper:1.0.6'
     //Android Activity 滑动返回
-    compile 'cn.bingoogolapple:bga-swipebacklayout:1.0.8'
+    compile 'com.aitangba:swipeback:1.0.2'
     //高斯模糊图
     compile 'com.qiushui:blurredview:0.8.1'
     //九宫格头像

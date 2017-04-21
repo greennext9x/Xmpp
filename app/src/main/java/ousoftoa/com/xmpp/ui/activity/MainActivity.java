@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     }
 
     @Override
-    public boolean isSupportSwipeBack() {
+    public boolean supportSlideBack() {
         return false;
     }
 

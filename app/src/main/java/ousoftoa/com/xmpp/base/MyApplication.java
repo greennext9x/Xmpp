@@ -6,13 +6,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.aitangba.swipeback.ActivityLifecycleHelper;
 import com.bumptech.glide.Glide;
 import com.lqr.emoji.LQREmotionKit;
 import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.loader.ImageLoader;
 import com.lqr.imagepicker.view.CropImageView;
-
-import cn.bingoogolapple.swipebacklayout.BGASwipeBackManager;
 
 /**
  * Created by 韩莫熙 on 2017/4/1.
@@ -31,8 +30,8 @@ public class MyApplication extends Application{
         super.onCreate();
         mInstance = this;
         mContext = this.getApplicationContext();
-        // 必须在 Application 的 onCreate 方法中执行 BGASwipeBackManager.getInstance().init(this) 来初始化滑动返回
-        BGASwipeBackManager.getInstance().init(this);
+        // 必须在 Application 的 onCreate 方法中执行 registerActivityLifecycleCallbacks 来初始化滑动返回
+        registerActivityLifecycleCallbacks( ActivityLifecycleHelper.build());
         LQREmotionKit.init( this );
         //初始化仿微信控件ImagePicker
         initImagePicker();

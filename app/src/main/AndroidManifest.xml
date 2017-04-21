@@ -68,32 +68,26 @@
         </activity>
         <activity
             android:name=".ui.activity.NewFriendActivity"
-            android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.activity.GroupChatActivity"
-            android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.activity.ChatActivity"
-            android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.activity.FriendInfoActivity"
-            android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.activity.SearchUserActivity"
-            android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.activity.UserInfoActivity"
-            android:theme="@style/AppTheme.Transparent"
             android:screenOrientation="portrait">
         </activity>
     </application>
