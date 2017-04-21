@@ -44,7 +44,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends RxAppCompatA
             EventBus.getDefault().register( this );
         }
         initPresenter();
-        StatusBarUtil.setColor(this,getResources().getColor( R.color.themebackgroup ),10);
+        StatusBarUtil.setColor(this,getResources().getColor( R.color.themebackgroup ));
         init();
     }
 

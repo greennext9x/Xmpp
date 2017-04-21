@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
 import android.widget.ImageView;
 
 import com.aitangba.swipeback.ActivityLifecycleHelper;
@@ -20,6 +21,8 @@ import com.lqr.imagepicker.view.CropImageView;
 public class MyApplication extends Application{
     private static MyApplication mInstance = null;
     private static Context mContext;
+    private static Handler mHandler;//主线程Handler
+
 
     public static MyApplication getInstance() {
         return mInstance;
@@ -30,6 +33,7 @@ public class MyApplication extends Application{
         super.onCreate();
         mInstance = this;
         mContext = this.getApplicationContext();
+        mHandler = new Handler();
         // 必须在 Application 的 onCreate 方法中执行 registerActivityLifecycleCallbacks 来初始化滑动返回
         registerActivityLifecycleCallbacks( ActivityLifecycleHelper.build());
         LQREmotionKit.init( this );
@@ -60,6 +64,12 @@ public class MyApplication extends Application{
         imagePicker.setOutPutX(1000);//保存文件的宽度。单位像素
         imagePicker.setOutPutY(1000);//保存文件的高度。单位像素
     }
+
+
+    public static Handler getMainHandler() {
+        return mHandler;
+    }
+
 
     public Context getContext(){
         return this.mContext;

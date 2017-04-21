@@ -2,6 +2,7 @@ package ousoftoa.com.xmpp.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -108,6 +109,25 @@ public class UIUtils {
      */
     public static String getPackageName() {
         return getContext().getPackageName();
+    }
+
+    /**
+     * 延迟执行任务
+     *
+     * @param task
+     * @param delayMillis
+     */
+    public static void postTaskDelay(Runnable task, int delayMillis) {
+        getMainThreadHandler().postDelayed(task, delayMillis);
+    }
+
+    /**
+     * 得到主线程Handler
+     *
+     * @return
+     */
+    public static Handler getMainThreadHandler() {
+        return MyApplication.getMainHandler();
     }
 
     /**
