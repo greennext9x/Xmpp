@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="128px"
+        android:background="@color/themebackgroup_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="28px"
+        android:paddingRight="30px"
+        >
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:layout_width="118px"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivHeader"
+                android:layout_width="104px"
+                android:layout_height="104px"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="14px"
+                android:layout_marginTop="14px"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/default_tp"/>
+
+            <cn.bingoogolapple.badgeview.BGABadgeView
+                android:id="@+id/bVheadview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4px"
+                app:badge_dragable="true"
+                app:badge_gravity="rightTop"
+                app:badge_horizontalMargin="0dp"
+                app:badge_verticalMargin="0dp"/>
+            <!--九宫格头像-->
+            <com.lqr.ninegridimageview.LQRNineGridImageView
+                android:id="@+id/ngiv"
+                android:layout_width="104px"
+                android:layout_height="104px"
+                android:layout_marginBottom="15px"
+                android:layout_marginTop="15px"
+                android:background="@color/backgroup_gray"
+                android:visibility="gone"
+                app:imgGap="2dp"/>
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/gray0"
+                android:textSize="32px"/>
+
+            <TextView
+                android:id="@+id/tvMsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10px"
+                android:singleLine="true"
+                android:textColor="@color/gray2"
+                android:textSize="24px"/>
+        </com.zhy.autolayout.AutoLinearLayout>
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20px"
+                android:singleLine="true"
+                android:text="下午2:00"
+                android:textColor="@color/gray2"
+                android:textSize="24px"/>
+
+            <ImageView
+                android:layout_width="30px"
+                android:layout_height="30px"
+                android:layout_marginTop="20px"
+                android:src="@mipmap/ic_sound_tip_close"
+                android:visibility="invisible"/>
+        </com.zhy.autolayout.AutoLinearLayout>
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <View
+        style="@style/horizontaldivider"
+        android:layout_marginLeft="28px"
+        android:layout_marginRight="30px"/>
+</com.zhy.autolayout.AutoLinearLayout>

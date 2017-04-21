@@ -1,0 +1,89 @@
+apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "ousoftoa.com.xmpp"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.trello:rxlifecycle:1.0'
+    compile 'com.trello:rxlifecycle-components:1.0'
+    compile 'io.reactivex:rxjava:1.0.14'
+    compile 'io.reactivex:rxandroid:1.0.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.google.code.gson:gson:1.6'
+    //xmpp与smack
+    compile files('libs/smack-android-4.1.4.jar')
+    compile files('libs/smack-android-extensions-4.1.4.jar')
+    compile files('libs/smack-core-4.1.4.jar')
+    compile files('libs/smack-experimental-4.1.4.jar')
+    compile files('libs/smack-extensions-4.1.4.jar')
+    compile files('libs/smack-im-4.1.4.jar')
+    compile files('libs/smack-sasl-provided-4.1.4.jar')
+    compile files('libs/smack-tcp-4.1.4.jar')
+    compile files('libs/pinyin4j-2.5.0.jar')
+    compile files('libs/httpmime-4.2.2.jar')
+    compile files('libs/jxmpp-core-0.4.1.jar')
+    compile files('libs/jxmpp-util-cache-0.4.1.jar')
+    compile files('libs/joda-time-2.5.jar')
+    compile files('libs/joda-time-2.5-sources.jar')
+    compile project(':FlycoTabLayout_Lib')
+    //万能适配器
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.12'
+    //简单的RecyclerView
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    //联系人侧边控件
+    compile 'com.gjiazhe:wavesidebar:1.3'
+    //glide
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    //选项条目控件
+    compile 'com.lqr.optionitemview:library:1.0.7'
+    //消息传递EventBus
+    compile 'org.greenrobot:eventbus:3.0.0'
+    //Dialog对话框
+
+    //转场动画
+    compile 'me.immortalz:transitionhelper:1.0.6'
+    //Android Activity 滑动返回
+    compile 'cn.bingoogolapple:bga-swipebacklayout:1.0.8'
+    //高斯模糊图
+    compile 'com.qiushui:blurredview:0.8.1'
+    //九宫格头像
+    compile 'com.lqr.ninegridimageview:library:1.0.0'
+    //表情
+    compile 'com.lqr.emoji:library:1.0.2'
+    //徽章控件
+    compile 'cn.bingoogolapple:bga-badgeview:1.1.3@aar'
+    //屏幕适配
+    compile 'com.zhy:autolayout:1.4.5'
+    //仿微信的图片选择
+    compile 'com.lqr.imagepicker:library:1.0.0'
+    //语音录制
+    compile 'com.lqr.audio:library:1.0.0'
+    //下拉刷新框架
+    compile 'cn.bingoogolapple:bga-refreshlayout:1.1.7'
+}

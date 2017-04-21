@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/themebackgroup_white"
+    android:orientation="vertical">
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/llNewFriend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="15px"
+        android:paddingLeft="30px"
+        android:paddingRight="30px">
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:layout_width="80px"
+            android:layout_height="80px"
+            android:layout_marginTop="4px">
+
+            <ImageView
+                android:layout_width="72px"
+                android:layout_height="72px"
+                android:layout_alignParentBottom="true"
+                android:src="@mipmap/ic_new_friend"/>
+
+            <cn.bingoogolapple.badgeview.BGABadgeView
+                android:id="@+id/bVheadview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4px"
+                app:badge_dragable="true"
+                app:badge_gravity="rightTop"
+                app:badge_horizontalMargin="0dp"
+                app:badge_verticalMargin="0dp"/>
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12px"
+            android:layout_marginTop="6px"
+            android:singleLine="true"
+            android:text="新的朋友"
+            android:textColor="@color/themebackgroup_black"
+            android:textSize="32px"/>
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <View
+        style="@style/horizontaldivider"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"/>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/llGroupCheat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="15px"
+        android:paddingLeft="30px"
+        android:paddingRight="30px">
+
+        <com.zhy.autolayout.AutoRelativeLayout
+            android:layout_width="80px"
+            android:layout_height="80px"
+            android:layout_marginTop="4px">
+
+            <ImageView
+                android:layout_width="72px"
+                android:layout_height="72px"
+                android:layout_alignParentBottom="true"
+                android:src="@mipmap/ic_group_cheat"/>
+
+            <View
+                android:id="@+id/vGroupCheatUnread"
+                android:layout_width="20px"
+                android:layout_height="20px"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/shape_dot_red"
+                android:visibility="gone"/>
+
+        </com.zhy.autolayout.AutoRelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12px"
+            android:layout_marginTop="6px"
+            android:singleLine="true"
+            android:text="群聊"
+            android:textColor="@color/themebackgroup_black"
+            android:textSize="32px"/>
+
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <View
+        style="@style/horizontaldivider"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"/>
+</com.zhy.autolayout.AutoLinearLayout>

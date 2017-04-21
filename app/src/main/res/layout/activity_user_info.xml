@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/backgroup_gray"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/themebackgroup"
+        android:elevation="@dimen/activity_horizontal_margin">
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/im_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_back"/>
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20px"
+                android:layout_weight="1"
+                android:text="个人资料"
+                android:textColor="@color/themebackgroup_white"
+                android:textSize="36px"/>
+
+        </com.zhy.autolayout.AutoLinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/themebackgroup_white"
+        android:layout_marginTop="40px"
+        android:orientation="vertical">
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:id="@+id/llHeader"
+            android:layout_width="match_parent"
+            android:layout_height="160px"
+            android:gravity="center_vertical"
+            android:paddingRight="6px">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6px"
+                android:layout_marginLeft="30px"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:text="头像"
+                android:textColor="@color/themebackgroup_black"
+                android:textSize="15sp"/>
+
+            <ImageView
+                android:id="@+id/ivHeader"
+                android:layout_width="130px"
+                android:layout_height="130px"
+                android:layout_marginLeft="30px"
+                android:layout_marginRight="30px"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/default_tp"/>
+        </com.zhy.autolayout.AutoLinearLayout>
+
+        <View
+            style="@style/horizontaldivider"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            />
+
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/oivName"
+            style="@style/OptionItem"
+            app:left_text="昵称"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"
+            app:right_text_color="@color/gray2"
+            app:right_text_margin_right="40px"
+            app:right_text_size="14sp"/>
+
+        <View
+            style="@style/horizontaldivider"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            />
+
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/oivAccount"
+            style="@style/OptionItem"
+            app:left_text="坑聊号"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"
+            app:right_text_color="@color/gray2"
+            app:right_text_margin_right="40px"
+            app:right_text_size="14sp"/>
+
+        <View
+            style="@style/horizontaldivider"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            />
+
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/oivQRCodeCard"
+            style="@style/OptionItem"
+            app:left_text="二维码名片"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"
+            app:right_image_margin_right="40px"
+            app:right_src="@mipmap/ic_qr_code"/>
+
+        <View
+            style="@style/horizontaldivider"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            />
+
+        <com.lqr.optionitemview.OptionItemView
+            style="@style/OptionItem"
+            app:left_text="我的地址"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"/>
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/themebackgroup_white"
+        android:layout_marginTop="40px"
+        android:orientation="vertical">
+
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/oivGender"
+            style="@style/OptionItem"
+            app:left_text="性别"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"
+            app:right_text=""
+            app:right_text_color="@color/gray2"
+            app:right_text_margin_right="40px"
+            app:right_text_size="14sp"/>
+
+        <View
+            style="@style/horizontaldivider"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            />
+
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/oivArea"
+            style="@style/OptionItem"
+            app:left_text="地区"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"/>
+
+        <View
+            style="@style/horizontaldivider"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            />
+
+        <com.lqr.optionitemview.OptionItemView
+            android:id="@+id/oivSignature"
+            style="@style/OptionItem"
+            app:left_text="个性签名"
+            app:left_text_color="@color/black0"
+            app:left_text_margin_left="30px"
+            app:left_text_size="16sp"
+            app:right_text="未填写"
+            app:right_text_color="@color/gray2"
+            app:right_text_margin_right="40px"
+            app:right_text_size="14sp"/>
+
+    </com.zhy.autolayout.AutoLinearLayout>
+</com.zhy.autolayout.AutoLinearLayout>

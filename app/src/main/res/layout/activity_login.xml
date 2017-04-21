@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/app_login_backgroup"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <com.qiushui.blurredview.BlurredView
+        android:id="@+id/bd_back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:move="true"
+        app:src="@mipmap/app_login_backgroup"/>
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="160px"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/skin_about_brand"/>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"
+        android:layout_marginTop="40px"
+        android:fillViewport="true"
+        android:scrollbarThumbVertical="@android:color/transparent"
+        android:scrollbars="vertical">
+
+        <com.zhy.autolayout.AutoLinearLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="110px"
+                android:layout_marginTop="320px"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="26px">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="30px"
+                    android:src="@mipmap/ic_mobile_flag"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/il_name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/et_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:hint="@string/hint_login_username"
+                        android:inputType="textVisiblePassword"
+                        android:maxLength="11"
+                        android:singleLine="true"
+                        android:textColor="@color/color_999999"
+                        android:textColorHint="@color/color_999999"
+                        android:textSize="28px"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/iv_clean_phone"
+                    android:layout_width="80px"
+                    android:layout_height="fill_parent"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_clear"
+                    android:visibility="gone"/>
+            </com.zhy.autolayout.AutoLinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_eeeeee"/>
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="110px"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="26px">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="30px"
+                    android:src="@mipmap/ic_password_flag"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/il_passsword"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/et_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:hint="@string/hint_login_password"
+                        android:inputType="textPassword"
+                        android:maxLength="30"
+                        android:singleLine="true"
+                        android:textColor="@color/color_999999"
+                        android:textColorHint="@color/color_999999"
+                        android:textSize="28px"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <ImageView
+                    android:id="@+id/clean_password"
+                    android:layout_width="80px"
+                    android:layout_height="fill_parent"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_clear"
+                    android:visibility="gone"/>
+
+                <ImageView
+                    android:id="@+id/iv_show_pwd"
+                    android:layout_width="80px"
+                    android:layout_height="fill_parent"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/pass_gone"/>
+            </com.zhy.autolayout.AutoLinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_eeeeee"/>
+
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="90px"
+                android:layout_marginBottom="20px"
+                android:layout_marginTop="42px"
+                android:background="@drawable/bg_btn_login_selected"
+                android:text="@string/login"
+                android:textColor="@color/color_ffffff"
+                android:textSize="36px"/>
+        </com.zhy.autolayout.AutoLinearLayout>
+
+    </ScrollView>
+
+</com.zhy.autolayout.AutoRelativeLayout>

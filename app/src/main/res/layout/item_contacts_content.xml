@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/themebackgroup_white"
+    android:orientation="vertical">
+
+    <com.zhy.autolayout.AutoLinearLayout
+        android:id="@+id/llcontent"
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="15px"
+        android:paddingLeft="30px"
+        android:paddingRight="30px"
+        android:paddingTop="15px">
+
+        <ImageView
+            android:id="@+id/ivHeader"
+            android:layout_width="72px"
+            android:layout_height="72px"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/default_tp"/>
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:text="沧晓"
+            android:textColor="@color/themebackgroup_black"
+            android:textSize="32px"/>
+
+        <CheckBox
+            android:id="@+id/cb"
+            style="@style/CustomCheckboxTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20px"
+            android:clickable="false"
+            android:visibility="gone"/>
+    </com.zhy.autolayout.AutoLinearLayout>
+
+    <View
+        style="@style/horizontaldivider"
+        android:layout_marginLeft="30px"
+        android:layout_marginRight="30px"/>
+</com.zhy.autolayout.AutoLinearLayout>
