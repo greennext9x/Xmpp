@@ -41,6 +41,7 @@ import ousoftoa.com.xmpp.model.bean.MessageEvent;
 import ousoftoa.com.xmpp.presenter.ChatPresenter;
 import ousoftoa.com.xmpp.ui.adapter.ChatAdapter;
 import ousoftoa.com.xmpp.ui.view.ChatView;
+import ousoftoa.com.xmpp.utils.UIUtils;
 
 
 public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatView {
@@ -172,7 +173,14 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
             }
             return false;
         } );
-        mEtContent.setOnClickListener( view -> mRvChat.smoothScrollToPosition( mData.size() ) );
+        mEtContent.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                UIUtils.postTaskDelay(() -> mRvChat.smoothScrollToPosition(mRvChat.getAdapter().getItemCount() - 1), 50);
+            }
+        });
+        mEtContent.setOnClickListener( view -> {
+            UIUtils.postTaskDelay(() -> mRvChat.smoothScrollToPosition(mRvChat.getAdapter().getItemCount() - 1), 50);
+        } );
         RxTextView.textChangeEvents( mEtContent ).subscribe( event -> {
             if (!TextUtils.isEmpty( event.text() )) {
                 mBtnSend.setVisibility( View.VISIBLE );
@@ -361,7 +369,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
         mEmotionKeyboard.setOnEmotionButtonOnClickListener( view -> {
             switch (view.getId()) {
                 case R.id.ivEmo:
-                    mRvChat.smoothScrollToPosition( mData.size() );
+                    UIUtils.postTaskDelay(() -> mRvChat.smoothScrollToPosition(mRvChat.getAdapter().getItemCount() - 1), 50);
                     mEtContent.clearFocus();
                     if (!mElEmotion.isShown()) {
                         if (mLlMore.isShown()) {
@@ -379,7 +387,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                     hideAudioButton();
                     break;
                 case R.id.ivMore:
-                    mRvChat.smoothScrollToPosition( mData.size() );
+                    UIUtils.postTaskDelay(() -> mRvChat.smoothScrollToPosition(mRvChat.getAdapter().getItemCount() - 1), 50);
                     mEtContent.clearFocus();
                     if (!mLlMore.isShown()) {
                         if (mElEmotion.isShown()) {
@@ -462,7 +470,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
     public void onNext(List<ChatItem> itemList) {
         mData = itemList;
         mAdapter.setNewData( mData );
-        mRvChat.smoothScrollToPosition( mData.size() );
+        UIUtils.postTaskDelay(() -> mRvChat.smoothScrollToPosition(mRvChat.getAdapter().getItemCount() - 1), 50);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
