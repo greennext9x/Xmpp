@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     }
 
     private void initLogin() {
-        if (!Constants.MODE.equals( "available" )) {
+        if (!Constants.USER_MODE.equals( "available" )) {
             mPresenter.toLogin();
         }
     }

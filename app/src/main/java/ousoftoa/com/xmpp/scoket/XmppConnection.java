@@ -159,7 +159,7 @@ public class XmppConnection {
     public void reconnect() {
         new Handler().postDelayed( () -> {
             closeConnection();
-            login( Constants.USER_NAME, Constants.PWD );
+            login( Constants.USER_NAME, Constants.USER_PWD );
             loadFriendAndJoinRoom();
         }, 1000 );
     }
@@ -188,8 +188,9 @@ public class XmppConnection {
                     // 更改在綫狀態
                     Presence presence = new Presence( Presence.Type.available );
                     presence.setMode( Presence.Mode.available );
-                    Constants.MODE = presence.getMode().toString();
+                    Constants.USER_MODE = presence.getMode().toString();
                     Constants.USER_NAME = account;
+                    Constants.USER_PWD = password;
                     getConnection().sendStanza( presence );
                     subscriber.onNext( true );
                     subscriber.onCompleted();

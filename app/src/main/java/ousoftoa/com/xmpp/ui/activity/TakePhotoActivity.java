@@ -38,10 +38,10 @@ public class TakePhotoActivity extends BaseActivity {
         //(0.0.8+)设置手动/自动对焦，默认为自动对焦
         mJCameraView.setAutoFoucs(false);
         //设置小视频保存路径
-        File file = new File( Constants.SAVE_VIDEO_PATH);
+        File file = new File( Constants.SAVE_SOUND_PATH);
         if (!file.exists())
             file.mkdirs();
-        mJCameraView.setSaveVideoPath(Constants.SAVE_VIDEO_PATH);
+        mJCameraView.setSaveVideoPath(Constants.SAVE_SOUND_PATH);
         initListener();
     }
 

@@ -15,7 +15,6 @@ public class XmppPresenceInterceptor implements StanzaListener {
     @Override
     public void processPacket(Stanza stanza) throws SmackException.NotConnectedException {
         Presence presence = (Presence) stanza;
-        String from = presence.getFrom();// 发送方
         String to = presence.getTo();// 接收方
         // Presence.Type有7中状态
         if (presence.getType().equals( Presence.Type.subscribe)) {

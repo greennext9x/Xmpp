@@ -2,6 +2,7 @@ package ousoftoa.com.xmpp.scoket;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smack.SmackException;
@@ -22,6 +23,7 @@ import ousoftoa.com.xmpp.model.bean.Room;
 import ousoftoa.com.xmpp.model.dao.MsgDbHelper;
 import ousoftoa.com.xmpp.model.dao.NewMsgDbHelper;
 import ousoftoa.com.xmpp.utils.DateUtil;
+import ousoftoa.com.xmpp.utils.ImageUtil;
 import ousoftoa.com.xmpp.utils.MyAndroidUtil;
 
 
@@ -34,16 +36,18 @@ public class XmppMessageListener implements StanzaListener {
             String userName = XmppConnection.getRoomName( nowMessage.getFrom() );
             String nickName = "";
             String userHead = "";
+            Bitmap head = null;
             VCard vCard = XmppConnection.getInstance().getUserInfo( userName );
             if (vCard != null) {
                 nickName = vCard.getField( "nickName" );
                 userHead = vCard.getField( "avatar" );
+                head = ImageUtil.getBitmapFromBase64String( userHead );
                 if (nickName == null) {
                     nickName = userName;
                 }
             }
             ChatItem msg = new ChatItem( ChatItem.NOTI, "", userName, nickName, userName, userHead, noti, DateUtil.getNow(), 0 );
-            MyAndroidUtil.showNoti( noti, nickName );
+            MyAndroidUtil.showNoti( "group", noti, nickName, head );
             NewMsgDbHelper.getInstance( MyApplication.getInstance() ).saveNewMsg( userName );
             MsgDbHelper.getInstance( MyApplication.getInstance() ).saveChatMsg( msg );
             EventBus.getDefault().post( new MessageEvent( "ChatNewMsg", "" ) );
@@ -56,6 +60,7 @@ public class XmppMessageListener implements StanzaListener {
             String userName = "";
             String nickName = "";
             String userHead = "";
+            Bitmap head = null;
             int chatType = ChatItem.CHAT;
             if (type == Message.Type.groupchat) {
                 chatName = XmppConnection.getRoomName( nowMessage.getFrom() );
@@ -65,6 +70,7 @@ public class XmppMessageListener implements StanzaListener {
                 if (vCard != null) {
                     nickName = vCard.getField( "nickName" );
                     userHead = vCard.getField( "avatar" );
+                    head = ImageUtil.getBitmapFromBase64String( userHead );
                     if (nickName == null) {
                         nickName = chatName;
                     }
@@ -75,6 +81,7 @@ public class XmppMessageListener implements StanzaListener {
                 if (vCard != null) {
                     nickName = vCard.getField( "nickName" );
                     userHead = vCard.getField( "avatar" );
+                    head = ImageUtil.getBitmapFromBase64String( userHead );
                     if (nickName == null) {
                         nickName = userName;
                     }
@@ -107,7 +114,7 @@ public class XmppMessageListener implements StanzaListener {
                     String dateStr = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( date );
                     editor.putString( "time", dateStr );
                     editor.commit();
-                    MyAndroidUtil.showNoti( msgBody, nickName );
+                    MyAndroidUtil.showNoti( subject, msgBody, nickName, head );
                 }
             }
         }

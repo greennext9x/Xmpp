@@ -132,6 +132,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
 
     @Override
     protected void init() {
+        ImagePicker.getInstance().setMultiMode( true );
         ImagePicker.getInstance().setSelectLimit( 1 );
         rxPermissions = new RxPermissions( this );
         Intent intent = getIntent();
@@ -232,7 +233,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
             UIUtils.postTaskDelay( () -> mRvChat.smoothScrollToPosition( mAdapter.getData().size() ), 50 );
         } );
         RxTextView.textChangeEvents( mEtContent ).subscribe( event -> {
-            if (!TextUtils.isEmpty( event.text() )) {
+            if (!TextUtils.isEmpty( event.text().toString().trim() )) {
                 mBtnSend.setVisibility( View.VISIBLE );
                 mIvMore.setVisibility( View.GONE );
             } else {
@@ -448,7 +449,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
     }
 
     private void initAudioRecordManager() {
-        AudioRecordManager.getInstance( this ).setMaxVoiceDuration( 150 );
+        AudioRecordManager.getInstance( this ).setMaxVoiceDuration( 60 );
         File audioDir = new File( Constants.SAVE_SOUND_PATH );
         if (!audioDir.exists()) {
             audioDir.mkdirs();
