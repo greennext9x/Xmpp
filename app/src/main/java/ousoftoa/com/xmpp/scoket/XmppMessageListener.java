@@ -20,10 +20,13 @@ import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.Constants;
 import ousoftoa.com.xmpp.model.bean.MessageEvent;
 import ousoftoa.com.xmpp.model.bean.Room;
+import ousoftoa.com.xmpp.model.bean.SoundData;
 import ousoftoa.com.xmpp.model.dao.MsgDbHelper;
 import ousoftoa.com.xmpp.model.dao.NewMsgDbHelper;
 import ousoftoa.com.xmpp.utils.DateUtil;
+import ousoftoa.com.xmpp.utils.FileUtil;
 import ousoftoa.com.xmpp.utils.ImageUtil;
+import ousoftoa.com.xmpp.utils.JsonUtil;
 import ousoftoa.com.xmpp.utils.MyAndroidUtil;
 
 
@@ -99,6 +102,10 @@ public class XmppMessageListener implements StanzaListener {
                 ChatItem msg = null;
                 String msgBody = nowMessage.getBody();
                 String subject = nowMessage.getSubject();
+                if (subject.equals( Constants.SEND_SOUND )){
+                    SoundData soundData = JsonUtil.jsonToObject( msgBody,SoundData.class );
+                    FileUtil.saveFileByBase64( soundData.getMsg(),soundData.getPathname() );
+                }
                 if (type == Message.Type.groupchat && XmppConnection.leaveRooms.contains( new Room( chatName ) )) {
                     System.out.println( "我已经离开这个房间了" );
                 } else if (nowMessage.getBody().contains( "[RoomChange" )) {

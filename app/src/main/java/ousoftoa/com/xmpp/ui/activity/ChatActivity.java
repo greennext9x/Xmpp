@@ -49,6 +49,7 @@ import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.Constants;
 import ousoftoa.com.xmpp.model.bean.LocationData;
 import ousoftoa.com.xmpp.model.bean.MessageEvent;
+import ousoftoa.com.xmpp.model.bean.SoundData;
 import ousoftoa.com.xmpp.model.dao.NewMsgDbHelper;
 import ousoftoa.com.xmpp.presenter.ChatPresenter;
 import ousoftoa.com.xmpp.scoket.XmppConnection;
@@ -541,7 +542,11 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                 File file = new File( audioPath.getPath() );
                 if (file.exists()) {
                     String datas = getBase64StringFromFile( audioPath.getPath() );
-                    mPresenter.sendMsg( Constants.SEND_SOUND, datas );
+                    SoundData soundData = new SoundData();
+                    soundData.setDuration( duration );
+                    soundData.setPathname( file.getPath() );
+                    soundData.setMsg( datas );
+                    mPresenter.sendMsg( Constants.SEND_SOUND, soundData.toString() );
                 }
             }
 

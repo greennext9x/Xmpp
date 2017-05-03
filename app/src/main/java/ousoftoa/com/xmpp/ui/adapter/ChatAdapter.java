@@ -2,7 +2,6 @@ package ousoftoa.com.xmpp.ui.adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.style.ImageSpan;
 import android.view.ViewGroup;
@@ -17,13 +16,13 @@ import com.lqr.audio.AudioPlayManager;
 import com.lqr.audio.IAudioPlayListener;
 import com.lqr.emoji.MoonUtils;
 
-import java.io.IOException;
 import java.util.List;
 
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.Constants;
 import ousoftoa.com.xmpp.model.bean.LocationData;
+import ousoftoa.com.xmpp.model.bean.SoundData;
 import ousoftoa.com.xmpp.scoket.XmppConnection;
 import ousoftoa.com.xmpp.utils.DateUtil;
 import ousoftoa.com.xmpp.utils.ImageUtil;
@@ -128,21 +127,15 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
                 .setVisible( R.id.tvText, false )
                 .setVisible( R.id.llLocation, false )
                 .setVisible( R.id.bivPic, false );
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource( item.msg );
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        RelativeLayout rlAudio = helper.setText( R.id.tvDuration, mediaPlayer.getDuration() / 1000 + "''" ).getView( R.id.rlAudio );
-        int increment = (int) (UIUtils.getDisplayWidth() / 240 * mediaPlayer.getDuration() / 1000);
+        SoundData soundData = JsonUtil.jsonToObject( item.msg, SoundData.class );
+        RelativeLayout rlAudio = helper.setText( R.id.tvDuration, soundData.getDuration() + "''" ).getView( R.id.rlAudio );
+        int increment = (int) (UIUtils.getDisplayWidth() / 240 * soundData.getDuration());
         ViewGroup.LayoutParams params = rlAudio.getLayoutParams();
         params.width = UIUtils.dip2Px( 65 ) + UIUtils.dip2Px( increment );
         rlAudio.setLayoutParams( params );
 
         helper.setOnClickListener( R.id.rlAudio, view -> {
-            String path = item.msg;
+            String path = soundData.getPathname();
             final ImageView ivAudio = helper.getView( R.id.ivAudio );
             Uri uri = Uri.parse( path );
             AudioPlayManager.getInstance().startPlay( mContext, uri, new IAudioPlayListener() {
