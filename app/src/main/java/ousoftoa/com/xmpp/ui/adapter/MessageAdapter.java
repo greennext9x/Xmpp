@@ -41,24 +41,25 @@ public class MessageAdapter extends BaseQuickAdapter<ChatItem, BaseViewHolder> {
             else
                 helper.setImageResource( R.id.ivHeader, R.mipmap.default_tp );
             if (item.msg != null) {
-                if (item.msg.contains( Constants.SAVE_IMG_PATH ))
-                    helper.setText( R.id.tvMsg, "[图片]" );
-                else if (item.msg.contains( Constants.SAVE_SOUND_PATH ))
-                    helper.setText( R.id.tvMsg, "[语音]" );
-                else if (item.msg.contains( "[/a0" ))
-                    helper.setText( R.id.tvMsg, "[位置]" );
-                else {
+                if (item.subject == null || item.subject.equals( Constants.SEND_TXT )) {
                     TextView tvContent = helper.getView( R.id.tvMsg );
                     MoonUtils.identifyFaceExpression( mContext, tvContent, item.msg, ImageSpan.ALIGN_BOTTOM );
-                }
+                } else if (item.subject.equals( Constants.SEND_IMG ))
+                    helper.setText( R.id.tvMsg, "[图片]" );
+                else if (item.subject.equals( Constants.SEND_SOUND ))
+                    helper.setText( R.id.tvMsg, "[语音]" );
+                else if (item.subject.equals( Constants.SEND_LOCATION ))
+                    helper.setText( R.id.tvMsg, "[位置]" );
             }
         }
         //是否显示有消息
         int newCount = newMsgDbHelper.getMsgCount( item.chatName );
-        if (newCount != 0) {
-            BGABadgeView header = helper.getView( R.id.bVheadview );
+        BGABadgeView header = helper.getView( R.id.bVheadview );
+        if (newCount > 0) {
             header.showTextBadge( newCount + "" );
-            header.setDragDismissDelegage( badgeable -> newMsgDbHelper.delNewMsg( item.chatName ));
+            header.setDragDismissDelegage( badgeable -> newMsgDbHelper.delNewMsg( item.chatName ) );
+        }else {
+            header.hiddenBadge();
         }
     }
 }

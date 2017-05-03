@@ -4,16 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
-import android.util.Log;
 
 import org.jivesoftware.smack.SmackConfiguration;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
-import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.filter.StanzaTypeFilter;
 import org.jivesoftware.smack.packet.Element;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Presence;
@@ -24,12 +22,11 @@ import org.jivesoftware.smack.roster.RosterEntry;
 import org.jivesoftware.smack.roster.packet.RosterPacket.ItemType;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.iqregister.AccountManager;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
-import org.jivesoftware.smackx.receipts.DeliveryReceiptManager;
+import org.jivesoftware.smackx.receipts.DeliveryReceiptRequest;
 import org.jivesoftware.smackx.search.ReportedData;
 import org.jivesoftware.smackx.search.ReportedData.Row;
 import org.jivesoftware.smackx.search.UserSearchManager;
@@ -39,10 +36,6 @@ import org.jivesoftware.smackx.xdata.FormField;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,9 +50,9 @@ import ousoftoa.com.xmpp.model.bean.Constants;
 import ousoftoa.com.xmpp.model.bean.Friend;
 import ousoftoa.com.xmpp.model.bean.Room;
 import ousoftoa.com.xmpp.utils.DataHelper;
+import ousoftoa.com.xmpp.utils.ImageUtil;
 import ousoftoa.com.xmpp.utils.PinyinComparator;
 import rx.Observable;
-import rx.Subscriber;
 
 public class XmppConnection {
     private static XMPPTCPConnection connection;
@@ -95,6 +88,8 @@ public class XmppConnection {
 
     /**
      * 创建连接
+     *
+     * @return
      */
     public XMPPTCPConnection getConnection() {
         if (connection == null) {
@@ -105,6 +100,8 @@ public class XmppConnection {
 
     /**
      * 打开连接
+     *
+     * @return
      */
     public boolean openConnection() {
         try {
@@ -125,10 +122,10 @@ public class XmppConnection {
                 connection.addConnectionListener( connectionListener );
                 xmppMessageInterceptor = new XmppMessageInterceptor();
                 messageListener = new XmppMessageListener();
-                connection.addPacketInterceptor( xmppMessageInterceptor, new PacketTypeFilter( Message.class ) );
-                connection.addSyncStanzaListener( messageListener, new PacketTypeFilter( Message.class ) );
-                connection.addSyncStanzaListener( new XmppPresenceListener(), new PacketTypeFilter( Presence.class ) );
-                connection.addPacketInterceptor( new XmppPresenceInterceptor(), new PacketTypeFilter( Presence.class ) );
+                connection.addPacketInterceptor( xmppMessageInterceptor, new StanzaTypeFilter( Message.class ) );
+                connection.addSyncStanzaListener( messageListener, new StanzaTypeFilter( Message.class ) );
+                connection.addSyncStanzaListener( new XmppPresenceListener(), new StanzaTypeFilter( Presence.class ) );
+                connection.addPacketInterceptor( new XmppPresenceInterceptor(), new StanzaTypeFilter( Presence.class ) );
                 ProviderManager.addIQProvider( "muc", "MZH", new MUCPacketExtensionProvider() );
                 return true;
             }
@@ -140,6 +137,8 @@ public class XmppConnection {
 
     /**
      * 关闭连接
+     *
+     * @return
      */
     public void closeConnection() {
         if (connection != null) {
@@ -167,7 +166,8 @@ public class XmppConnection {
 
     public Observable loadFriendAndJoinRoom() {
         return Observable.from( getMyRoom() )
-                .map( room -> joinMultiUserChat( Constants.USER_NAME, room.name, false ) );
+                .map( room ->
+                        joinMultiUserChat( Constants.USER_NAME, room.name, false ) );
     }
 
     /**
@@ -178,38 +178,36 @@ public class XmppConnection {
      * @return
      */
     public Observable<List<Friend>> login(String account, String password) {
-        return Observable.create( new Observable.OnSubscribe<Boolean>() {
-            @Override
-            public void call(Subscriber<? super Boolean> subscriber) {
-                try {
-                    if (getConnection() == null) {
-                        subscriber.onError( new Throwable( "连接失败" ) );
-                    }
-                    if (!getConnection().isAuthenticated() && getConnection().isConnected()) {
-                        getConnection().login( account, password );
-                        // 更改在綫狀態
-                        Presence presence = new Presence( Presence.Type.available );
-                        presence.setMode( Presence.Mode.available );
-                        Constants.MODE = presence.getMode().toString();
-                        getConnection().sendStanza( presence );
-                        subscriber.onNext( true );
-                        subscriber.onCompleted();
-                    } else {
-                        subscriber.onError( new Throwable( "重复连接" ) );
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    subscriber.onError( new Throwable( e ) );
+        return Observable.create( (Observable.OnSubscribe<Boolean>) subscriber -> {
+            try {
+                if (getConnection() == null) {
+                    subscriber.onError( new Throwable( "连接失败" ) );
                 }
+                if (!getConnection().isAuthenticated() && getConnection().isConnected()) {
+                    getConnection().login( account, password );
+                    // 更改在綫狀態
+                    Presence presence = new Presence( Presence.Type.available );
+                    presence.setMode( Presence.Mode.available );
+                    Constants.MODE = presence.getMode().toString();
+                    Constants.USER_NAME = account;
+                    getConnection().sendStanza( presence );
+                    subscriber.onNext( true );
+                    subscriber.onCompleted();
+                } else {
+                    subscriber.onError( new Throwable( "重复连接" ) );
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( e.getMessage() ) );
             }
         } ).map( aBoolean -> {
             VCard vCard = getUserInfo( null );
-            if (vCard != null){
+            if (vCard != null) {
                 Friend mfriend = new Friend();
                 String username = account;
-                String nikename = vCard.getField("nickName");
+                String nikename = vCard.getField( "nickName" );
                 String userheard = vCard.getField( "avatar" );
-                if (nikename == null){
+                if (nikename == null) {
                     nikename = username;
                 }
                 mfriend.setUsername( username );
@@ -217,10 +215,10 @@ public class XmppConnection {
                 mfriend.setNickname( nikename );
                 DataHelper.saveDeviceData( MyApplication.getInstance(), Constants.USERINFO, mfriend );
                 return vCard;
-            } else{
+            } else {
                 return new Throwable( "获取用户信息失败" );
             }
-        } ).flatMap( vCard -> getFriend());
+        } ).flatMap( vCard -> getFriend() );
     }
 
     /**
@@ -230,18 +228,27 @@ public class XmppConnection {
      * @param password 注册密码
      * @return 1、注册成功 0、服务器没有返回结果2、这个账号已经存在3、注册失败
      */
-    public boolean regist(String account, String password) {
-        if (getConnection() == null) {
-            return false;
-        } else {
-            try {
-                AccountManager.getInstance( getConnection() ).createAccount( account, password );
-                return true;
-            } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                    | SmackException.NotConnectedException e) {
-                return false;
+    public Observable<Boolean> regist(String account, String password) {
+        return Observable.create( subscriber -> {
+            if (getConnection() == null)
+                subscriber.onError( new Throwable( "连接失败" ) );
+            else {
+                try {
+                    AccountManager.getInstance( getConnection() ).createAccount( account, password );
+                    subscriber.onNext( true );
+                    subscriber.onCompleted();
+                } catch (SmackException.NoResponseException e) {
+                    e.printStackTrace();
+                    subscriber.onError( new Throwable( "注册失败" ) );
+                } catch (XMPPException.XMPPErrorException e) {
+                    e.printStackTrace();
+                    subscriber.onError( new Throwable( "账号已经存在" ) );
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                    subscriber.onError( new Throwable( "注册失败" ) );
+                }
             }
-        }
+        } );
     }
 
     /**
@@ -250,66 +257,72 @@ public class XmppConnection {
      * @param pwd
      * @return
      */
-    public boolean changPwd(String pwd) {
-        try {
-            AccountManager.getInstance( getConnection() ).changePassword( pwd );
-            return true;
-        } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                | SmackException.NotConnectedException e) {
-            return false;
-        }
+    public Observable<Boolean> changPwd(String pwd) {
+        return Observable.create( subscriber -> {
+            try {
+                AccountManager.getInstance( getConnection() ).changePassword( pwd );
+                subscriber.onNext( true );
+                subscriber.onCompleted();
+            } catch (SmackException.NoResponseException e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "修改密码失败" ) );
+            } catch (XMPPException.XMPPErrorException e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "修改密码失败" ) );
+            } catch (SmackException.NotConnectedException e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "修改密码失败" ) );
+            }
+        } );
     }
 
     public void setRecevier(String chatName, int chatType) {
         if (getConnection() == null)
             return;
         if (chatType == ChatItem.CHAT) {
-            // 创建回话
-            ChatManager cm = ChatManager.getInstanceFor( getConnection() );
-            // 发送消息给pc服务器的好友（获取自己的服务器，和好友）
-            newchat = cm.createChat( getFullUsername( chatName ), null );
+            newchat = ChatManager.getInstanceFor( getConnection() )
+                    .createChat( getFullUsername( chatName ) );
         } else if (chatType == ChatItem.GROUP_CHAT) {
             mulChat = MultiUserChatManager.getInstanceFor( getConnection() )
                     .getMultiUserChat( chatName + "@conference." + getConnection().getServiceName() );
         }
     }
 
-    //发送文本消息 String chatname
+    /**
+     * 发送文本消息
+     *
+     * @param chatname
+     * @return
+     */
     @SuppressLint("NewApi")
-    public void sendMsg(String chatname, String msg, int chatType) throws Exception {
-        if (getConnection() == null) {
-            throw new Exception( "XmppException" );
-        }
-        if (!msg.isEmpty()) {
-            Message message = new Message();
-            message.setBody( msg );
-            message.setFrom( getConnection().getUser() );
-            message.setTo( chatname + "@" + Constants.SERVER_NAME );
-            // 添加回执请求
-            DeliveryReceiptManager.addDeliveryReceiptRequest( message );
-            if (chatType == ChatItem.CHAT) {
-                newchat.sendMessage( message );
-            } else if (chatType == ChatItem.GROUP_CHAT) {
-                mulChat.sendMessage( message );
+    public Observable<Boolean> sendMsg(String chatname, String suject, String msg, int chatType) {
+        return Observable.create( subscriber -> {
+            if (getConnection() == null)
+                subscriber.onError( new Throwable( "连接失败" ) );
+            if (!msg.isEmpty()) {
+                Message message = new Message();
+                message.setSubject( suject );
+                message.setBody( msg );
+                message.setFrom( getConnection().getUser() );
+                message.setTo( chatname + "@" + Constants.SERVER_NAME );
+                // 添加回执请求
+                DeliveryReceiptRequest.addTo( message );
+                try {
+                    if (chatType == ChatItem.CHAT) {
+                        newchat.sendMessage( message );
+                        subscriber.onNext( true );
+                        subscriber.onCompleted();
+                    } else if (chatType == ChatItem.GROUP_CHAT) {
+                        mulChat.sendMessage( message );
+                        subscriber.onNext( true );
+                        subscriber.onCompleted();
+                    }
+                } catch (SmackException.NotConnectedException e) {
+                    e.printStackTrace();
+                    subscriber.onError( new Throwable( "发送失败" ) );
+                }
             }
-        }
-    }
-
-    //发送消息，附带参数
-    public void sendMsgWithParms(String msg, String[] parms, Object[] datas, int chatType) throws Exception {
-        if (getConnection() == null) {
-            throw new Exception( "XmppException" );
-        }
-        Message message = new Message();
-        for (int i = 0; i < datas.length; i++) {
-            message.addSubject( parms[i], (String) datas[i] );
-        }
-        message.setBody( msg );
-        if (chatType == ChatItem.CHAT) {
-            newchat.sendMessage( message );
-        } else if (chatType == ChatItem.GROUP_CHAT) {
-            mulChat.sendMessage( msg + ":::" + datas[0] );
-        }
+        } );
     }
 
     /**
@@ -349,16 +362,19 @@ public class XmppConnection {
      * @param userName id
      * @param
      */
-    public boolean addUser(String userName) {
-        if (getConnection() == null)
-            return false;
-        try {
-            Roster.getInstanceFor( getConnection() ).createEntry( getFullUsername( userName ), getFullUsername( userName ), null );
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public Observable<Boolean> addUser(String userName) {
+        return Observable.create( subscriber -> {
+            if (getConnection() == null)
+                subscriber.onError( new Throwable( "连接失败" ) );
+            try {
+                Roster.getInstanceFor( getConnection() ).createEntry( getFullUsername( userName ), getFullUsername( userName ), null );
+                subscriber.onNext( true );
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "添加好友失败" ) );
+            }
+        } );
     }
 
     /**
@@ -367,65 +383,49 @@ public class XmppConnection {
      * @param userName
      * @return
      */
-    public boolean removeUser(String userName) {
-        if (getConnection() == null)
-            return false;
-        try {
-            RosterEntry entry = null;
-            if (userName.contains( "@" ))
-                entry = Roster.getInstanceFor( getConnection() ).getEntry( userName );
-            else
-                entry = Roster.getInstanceFor( getConnection() ).getEntry( userName + "@" + getConnection().getServiceName() );
-            if (entry == null)
-                entry = Roster.getInstanceFor( getConnection() ).getEntry( userName );
-            Roster.getInstanceFor( getConnection() ).removeEntry( entry );
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public Observable<Boolean> removeUser(String userName) {
+        return Observable.create( subscriber -> {
+            if (getConnection() == null)
+                subscriber.onError( new Throwable( "连接失败" ) );
+            try {
+                RosterEntry entry = null;
+                if (userName.contains( "@" ))
+                    entry = Roster.getInstanceFor( getConnection() ).getEntry( userName );
+                else
+                    entry = Roster.getInstanceFor( getConnection() ).getEntry( getFullUsername( userName ) );
+                if (entry == null)
+                    entry = Roster.getInstanceFor( getConnection() ).getEntry( userName );
+                Roster.getInstanceFor( getConnection() ).removeEntry( entry );
+                subscriber.onNext( true );
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "删除好友失败" ) );
+            }
+        } );
     }
 
     /**
      * 修改用户信息
      *
-     * @param
+     * @param vcard
+     * @return
      */
-    public boolean changeVcard(VCard vcard) {
-        if (getConnection() == null)
-            return false;
-        try {
-            vcard.save( getConnection() );
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+    public Observable<Boolean> changeVcard(VCard vcard) {
+        return Observable.create( subscriber -> {
+            if (getConnection() == null)
+                subscriber.onError( new Throwable( "连接失败" ) );
+            try {
+                vcard.save( getConnection() );
+                subscriber.onNext( true );
+                subscriber.onCompleted();
+            } catch (Exception e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "修改失败" ) );
+            }
+        } );
     }
 
-    /**
-     * 修改用户头像
-     *
-     * @param file
-     */
-    public Bitmap changeImage(File file) {
-        Bitmap bitmap = null;
-        if (getConnection() == null)
-            return bitmap;
-        try {
-            VCard vcard = getUserInfo( null );
-            byte[] bytes;
-            bytes = getFileBytes( file );
-            String encodedImage = StringUtils.encodeHex( bytes );
-            vcard.setField( "avatar", encodedImage );
-            ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
-            bitmap = BitmapFactory.decodeStream( bais );
-            vcard.save( getConnection() );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
 
     /**
      * 获取用户信息
@@ -452,66 +452,43 @@ public class XmppConnection {
     /**
      * 获取用户头像信息
      *
-     * @param
      * @param user
      * @return
      */
-    public Bitmap getUserImage(String user) {  //null 时查自己
-
-        ByteArrayInputStream bais = null;
-        try {
-            VCard vcard = new VCard();
-            if (user == null) {
-                vcard.load( getConnection() );
-            } else {
-                vcard.load( getConnection(), user + "@" + Constants.SERVER_NAME );
+    public Observable<Bitmap> getUserImage(String user) {  //null 时查自己
+        return Observable.create( (Observable.OnSubscribe<VCard>) subscriber -> {
+            try {
+                VCard vcard = new VCard();
+                if (user == null) {
+                    vcard.load( getConnection() );
+                } else {
+                    vcard.load( getConnection(), user + "@" + Constants.SERVER_NAME );
+                }
+                if (vcard == null)
+                    subscriber.onError( new Throwable( "没有用户信息" ) );
+                else {
+                    subscriber.onNext( vcard );
+                    subscriber.onCompleted();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                subscriber.onError( new Throwable( "获取头像失败" ) );
             }
-            if (vcard == null || vcard.getAvatar() == null)
-                return null;
-            bais = new ByteArrayInputStream( vcard.getAvatar() );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (bais == null)
-            return null;
-        return BitmapFactory.decodeStream( bais );
-    }
-
-    /**
-     * 文件转字节
-     *
-     * @param file
-     * @throws IOException
-     * @returnq
-     */
-    private byte[] getFileBytes(File file) throws IOException {
-        BufferedInputStream bis = null;
-        try {
-            bis = new BufferedInputStream( new FileInputStream( file ) );
-            int bytes = (int) file.length();
-            byte[] buffer = new byte[bytes];
-            int readBytes = bis.read( buffer );
-            if (readBytes != buffer.length) {
-                throw new IOException( "Entire file not read" );
-            }
-            return buffer;
-        } finally {
-            if (bis != null) {
-                bis.close();
-            }
-        }
+        } ).map( vCard -> {
+            String avatar = vCard.getField( "avatar" );
+            return ImageUtil.getBitmapFromBase64String( avatar );
+        } );
     }
 
     /**
      * 创建房间
      *
-     * @param roomName 房间名称
+     * @param roomName
+     * @return
      */
     public MultiUserChat createRoom(String roomName) {
-        if (getConnection() == null) {
+        if (getConnection() == null)
             return null;
-        }
         MultiUserChat muc = null;
         try {
             // 创建一个MultiUserChat
@@ -556,7 +533,7 @@ public class XmppConnection {
     public Observable<List<Friend>> getFriend() {
         friendList.clear();
         return Observable.just( Roster.getInstanceFor( getConnection() ).getEntries() )
-                .flatMap( entries -> {
+                .map( entries -> {
                     List<Friend> friendsTemp = new ArrayList<>();
                     for (RosterEntry entry : entries) {
                         Friend friend = new Friend();
@@ -578,9 +555,9 @@ public class XmppConnection {
                         friend.setType( type );
                         friendsTemp.add( friend );
                     }
-                    return Observable.just( friendsTemp );
+                    return friendsTemp;
                 } )
-                .flatMap( list -> {
+                .map( list -> {
                     Friend[] usersArray = new Friend[list.size()];
                     for (int i = 0; i < list.size(); i++) {
                         Friend friend = new Friend();
@@ -592,7 +569,7 @@ public class XmppConnection {
                     }
                     Arrays.sort( usersArray, new PinyinComparator() );
                     friendList = new ArrayList<>( Arrays.asList( usersArray ) );
-                    return Observable.just( friendList );
+                    return friendList;
                 } );
     }
 
@@ -612,8 +589,9 @@ public class XmppConnection {
     /**
      * 加入会议室
      *
-     * @param user      昵称
-     * @param roomsName 会议室名
+     * @param user
+     * @param roomsName
+     * @return
      */
     public MultiUserChat joinMultiUserChat(String user, String roomsName, boolean restart) {
         if (getConnection() == null)

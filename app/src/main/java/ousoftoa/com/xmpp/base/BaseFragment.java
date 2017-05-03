@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,9 @@ public abstract class BaseFragment<P extends BasePresenter> extends RxFragment i
     protected ProgressDialog dialog ;
     protected View mRootView;
     protected Context mContext;
-    private static final String TAG = "BaseFragment";
+    private boolean isViewCreated;
+    private boolean isLoadComleted;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,6 +36,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends RxFragment i
         }
         initPresenter();
         init();
+        isViewCreated = true;
         return mRootView;
     }
 
@@ -41,6 +45,26 @@ public abstract class BaseFragment<P extends BasePresenter> extends RxFragment i
     protected abstract void initPresenter();
 
     protected abstract void init();
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint( isVisibleToUser );
+        if (isVisibleToUser && isViewCreated && !isLoadComleted){
+            loadData();
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated( savedInstanceState );
+        if (getUserVisibleHint()){
+            loadData();
+        }
+    }
+
+    public void loadData(){
+        isLoadComleted = true;
+    }
 
     @Override
     public void onAttach(Context context) {

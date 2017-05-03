@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.flyco.dialog.widget.NormalListDialog;
 import com.jakewharton.rxbinding.view.RxView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,6 +45,7 @@ public class NewFriendActivity extends BaseActivity<NewFriendPresenter> implemen
     private NewFriendAdapter mAdapter;
     private View emtyView;
     private int position = 0;
+    private NormalListDialog dialog;
 
     @Override
     protected void initView() {
@@ -58,10 +60,21 @@ public class NewFriendActivity extends BaseActivity<NewFriendPresenter> implemen
     @Override
     protected void init() {
         initToobar();
+        initDialog();
         initEmtyView();
         initAdapter();
         initListener();
         mPresenter.getNewFriend();
+    }
+
+    private void initDialog() {
+        dialog = new NormalListDialog( mContext,new String[]{"删除该消息"} );
+        dialog.isTitleShow( false );
+        dialog.setOnOperItemClickL( (parent, view, position, id) -> {
+            NewFriendDbHelper.getInstance(mContext).delFriend( mData.get( this.position ).getUsername() );
+            dialog.dismiss();
+            mPresenter.getNewFriend();
+        } );
     }
 
     private void initEmtyView() {
@@ -92,6 +105,11 @@ public class NewFriendActivity extends BaseActivity<NewFriendPresenter> implemen
                         this.position = position;
                         mPresenter.addFriend( mData.get( position ).getUsername() );
                 }
+        } );
+        mAdapter.setOnItemLongClickListener( (adapter, view, position) -> {
+            this.position = position;
+            dialog.show();
+            return false;
         } );
     }
 

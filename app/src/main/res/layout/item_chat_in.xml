@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/gray4"
     android:orientation="vertical">
 
     <!-- 显示时间 -->
@@ -29,12 +28,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
-        android:gravity="left|center"
+        android:gravity="left"
         android:orientation="horizontal"
-        android:paddingBottom="40px"
+        android:paddingBottom="10px"
         android:paddingLeft="10px"
         android:paddingRight="10px"
-        android:paddingTop="20px">
+        android:paddingTop="10px">
         <!-- 人物头像 -->
 
         <ImageView
@@ -63,26 +62,28 @@
                 android:textSize="12sp"
                 android:visibility="gone"/>
 
-            <TextView
+            <ousoftoa.com.xmpp.wight.bubble.BubbleTextView
                 android:id="@+id/tvText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="phone|email|map|web"
-                android:background="@drawable/img_bubble_receive"
-                android:gravity="left|center_vertical"
+                android:gravity="center_vertical"
+                android:linksClickable="true"
                 android:maxWidth="480px"
                 android:minHeight="80px"
-                android:paddingBottom="24px"
-                android:paddingLeft="32px"
-                android:paddingRight="32px"
-                android:paddingTop="24px"
-                android:text="嗯嗯嗯嗯嗯嗯"
-                android:textColor="#444444"
-                android:textColorLink="#666666"
-                android:textSize="16sp"
-                android:visibility="visible"/>
+                android:padding="20px"
+                android:text="Hello BubbleTextVew"
+                android:textColor="@android:color/black"
+                android:textColorLink="#3655bf"
+                android:textSize="28px"
+                app:angle="8dp"
+                app:arrowHeight="8dp"
+                app:arrowLocation="left"
+                app:arrowPosition="14dp"
+                app:arrowWidth="5dp"
+                app:bubbleColor="@color/white"/>
             <!-- 图片 -->
-            <ousoftoa.com.xmpp.wight.BubbleImageView
+            <ousoftoa.com.xmpp.wight.bubble.BubbleImageView
                 android:id="@+id/bivPic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -91,13 +92,44 @@
                 android:minHeight="160px"
                 android:minWidth="160px"
                 android:scaleType="fitCenter"
-                android:visibility="gone"
-                app:bubble_angle="10dp"
-                app:bubble_arrowHeight="10dp"
+                app:bubble_angle="8dp"
+                app:bubble_arrowHeight="8dp"
                 app:bubble_arrowLocation="left"
                 app:bubble_arrowOffset="-5dp"
-                app:bubble_arrowTop="20dp"
-                app:bubble_arrowWidth="8dp"/>
+                app:bubble_arrowTop="15dp"
+                app:bubble_arrowWidth="4dp"/>
+
+            <com.zhy.autolayout.AutoLinearLayout
+                android:id="@+id/llLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/img_location_receive"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/ivLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="300px"
+                    android:maxWidth="480px"
+                    android:padding="10px"
+                    android:scaleType="fitCenter"
+                    android:src="@mipmap/default_location"/>
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="60px"
+                    android:ellipsize="end"
+                    android:maxWidth="480px"
+                    android:padding="15px"
+                    android:textColor="#444444"
+                    android:textColorLink="#666666"
+                    android:textSize="24px"/>
+            </com.zhy.autolayout.AutoLinearLayout>
 
             <com.zhy.autolayout.AutoLinearLayout
                 android:id="@+id/llSound"

@@ -11,6 +11,8 @@ import ousoftoa.com.xmpp.model.bean.Constants;
 
 public class NewMsgDbHelper {             //新消息条数
 	private static NewMsgDbHelper instance = null;
+	private static final int DB_VERSION = 1;
+	private static final String DB_NAME = "newMsg";
 	
 	private SqlLiteHelper helper;
 	private SQLiteDatabase db;
@@ -32,8 +34,7 @@ public class NewMsgDbHelper {             //新消息条数
 	}
 	
 	private class SqlLiteHelper extends SQLiteOpenHelper {
-		private static final int DB_VERSION = 1;
-		private static final String DB_NAME = "newMsg";
+
 
 		public SqlLiteHelper(Context context) {
 			super(context, DB_NAME, null, DB_VERSION);
@@ -71,10 +72,10 @@ public class NewMsgDbHelper {             //新消息条数
 			values.put("msgId", msgId);
 			values.put("msgCount", 1);
 			values.put("whosMsg", Constants.USER_NAME);
-			db.insert(helper.DB_NAME, null, values);   //第二，第三个参数其中一个不能为null
+			db.insert(DB_NAME, null, values);   //第二，第三个参数其中一个不能为null
 		}else{
 			values.put("msgCount",nowCount+1 );
-			db.update(helper.DB_NAME, values, " msgId=? and whosMsg=?", 
+			db.update(DB_NAME, values, " msgId=? and whosMsg=?",
 					new String[]{msgId,Constants.USER_NAME});
 		}
 	}
@@ -83,7 +84,7 @@ public class NewMsgDbHelper {             //新消息条数
 	 * @param msgId
 	 */
 	public void delNewMsg(String msgId){
-		db.delete(helper.DB_NAME, " msgId=? and whosMsg=?", new String[]{msgId,Constants.USER_NAME});
+		db.delete(DB_NAME, " msgId=? and whosMsg=?", new String[]{msgId,Constants.USER_NAME});
 	}
 
 	//某个人
@@ -111,6 +112,6 @@ public class NewMsgDbHelper {             //新消息条数
 	}
 
 	public void clear(){
-		db.delete(helper.DB_NAME, "id>?", new String[]{"0"});
+		db.delete(DB_NAME, "id>?", new String[]{"0"});
 	}
 }

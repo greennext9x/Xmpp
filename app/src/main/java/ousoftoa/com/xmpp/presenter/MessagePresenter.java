@@ -25,6 +25,6 @@ public class MessagePresenter extends BasePresenter{
                 .compose( RxUtils.applySchedulers( mView ) )
                 .subscribe( itemList -> {
                     mView.onNext( itemList );
-                } );
+                },throwable -> mView.onError( new Throwable( "获取消息列表失败" ) ) );
     }
 }

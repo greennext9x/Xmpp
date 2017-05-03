@@ -10,9 +10,11 @@ import com.lqr.imagepicker.ImagePicker;
 import com.lqr.imagepicker.bean.ImageItem;
 import com.lqr.imagepicker.ui.ImageGridActivity;
 import com.lqr.optionitemview.OptionItemView;
+import com.nanchen.compresshelper.CompressHelper;
 
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +73,7 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
 
     @Override
     protected void init() {
-        ImagePicker.getInstance().setSelectLimit( 1 );
+        ImagePicker.getInstance().setMultiMode( false );
         initListener();
         mPresenter.getUserInfo();
     }
@@ -100,13 +102,6 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
     }
 
     @Override
-    public void onSetHeard(Bitmap bitmap) {
-        if (bitmap != null){
-            mIvHeader.setImageBitmap( bitmap );
-        }
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -116,7 +111,9 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
                         ArrayList<ImageItem> images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
                         if (images != null && images.size() > 0) {
                             ImageItem imageItem = images.get(0);
-                            mPresenter.setPortrait(imageItem);
+                            File file = new File( imageItem.path );
+                            File newFile = CompressHelper.getDefault(this).compressToFile(file);
+                            mPresenter.setPortrait(newFile.getPath());
                         }
                     }
                 }

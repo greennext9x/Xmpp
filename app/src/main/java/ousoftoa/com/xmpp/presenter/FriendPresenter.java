@@ -32,51 +32,31 @@ public class FriendPresenter extends BasePresenter {
                     subscriber.onNext( vCard );
                     subscriber.onCompleted();
                 } else {
-                    subscriber.onError( new Throwable() );
+                    subscriber.onError( new Throwable( "获取好友信息失败" ) );
                 }
             }
         } ).compose( RxUtils.bindToSchedulers( mView ) )
                 .subscribe( vCard -> mView.onNext( vCard )
-                        , throwable -> mView.onError(throwable) );
+                        , throwable -> mView.onError( throwable ) );
     }
 
-    public void addFriend(String username){
-        Observable.create( (Observable.OnSubscribe<Boolean>) subscriber -> {
-                boolean isSucces = XmppConnection.getInstance().addUser( username );
-                if (isSucces){
-                    subscriber.onNext( true );
-                }else {
-                    subscriber.onNext( false );
-                }
-                subscriber.onCompleted();
-        } ).compose( RxUtils.applySchedulers( mView ) )
+    public void addFriend(String username) {
+        XmppConnection.getInstance().addUser( username )
+                .compose( RxUtils.applySchedulers( mView ) )
                 .subscribe( aBoolean -> {
-                    if (aBoolean){
-                        mView.showTip( "添加成功" );
-                        mView.onAddNext();
-                    }else {
-                        mView.showTip( "添加失败" );
-                    }
-                },throwable ->  mView.onError( throwable ) );
+                    mView.showTip( "添加成功" );
+                    mView.onAddNext();
+                }, throwable -> mView.showTip( throwable.getMessage() ) );
     }
 
-    public void deleteFriend(String username){
-        Observable.create( (Observable.OnSubscribe<Boolean>) subscriber -> {
-            boolean isSucces = XmppConnection.getInstance().removeUser( username );
-            if (isSucces){
-                subscriber.onNext( true );
-            }else {
-                subscriber.onNext( false );
-            }
-            subscriber.onCompleted();
-        } ).compose( RxUtils.applySchedulers( mView ) )
+    public void deleteFriend(String username) {
+        XmppConnection.getInstance().removeUser( username )
+                .compose( RxUtils.applySchedulers( mView ) )
                 .subscribe( aBoolean -> {
-                    if (aBoolean){
-                        mView.showTip( "删除成功" );
-                        mView.onDeleteNext();
-                    }else {
-                        mView.showTip( "添加失败" );
-                    }
-                },throwable -> mView.onError(throwable) );
+                    mView.showTip( "删除成功" );
+                    mView.onDeleteNext();
+                }, throwable -> {
+                    mView.showTip( "删除失败" );
+                } );
     }
 }

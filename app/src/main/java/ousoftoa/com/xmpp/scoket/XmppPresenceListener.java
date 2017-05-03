@@ -1,8 +1,8 @@
 package ousoftoa.com.xmpp.scoket;
 
 import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.roster.packet.RosterPacket.ItemType;
@@ -19,7 +19,7 @@ import ousoftoa.com.xmpp.utils.DateUtil;
 import ousoftoa.com.xmpp.utils.MyAndroidUtil;
 
 
-public class XmppPresenceListener implements PacketListener {
+public class XmppPresenceListener implements StanzaListener {
 
     @Override
     public void processPacket(Stanza stanza) throws SmackException.NotConnectedException {
@@ -48,7 +48,7 @@ public class XmppPresenceListener implements PacketListener {
                         }
                     }
                     MyAndroidUtil.showNoti(nickName + "同意添加好友", nickName);
-                    ChatItem msg = new ChatItem(ChatItem.CHAT, userName, nickName, userName, userHead, userName + "同意添加好友", DateUtil.getNow(), 0);
+                    ChatItem msg = new ChatItem(ChatItem.CHAT,"", userName, nickName, userName, userHead, userName + "同意添加好友", DateUtil.getNow(), 0);
                     NewMsgDbHelper.getInstance( MyApplication.getInstance()).saveNewMsg(userName);
                     MsgDbHelper.getInstance(MyApplication.getInstance()).saveChatMsg(msg);
                     XmppConnection.getInstance().changeFriend(friend, ItemType.both);

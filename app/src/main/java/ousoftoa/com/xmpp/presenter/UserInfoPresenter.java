@@ -2,15 +2,14 @@ package ousoftoa.com.xmpp.presenter;
 
 import android.content.Context;
 
-import com.lqr.imagepicker.bean.ImageItem;
-
+import org.greenrobot.eventbus.EventBus;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
-import java.io.File;
-
 import ousoftoa.com.xmpp.base.BasePresenter;
+import ousoftoa.com.xmpp.model.bean.MessageEvent;
 import ousoftoa.com.xmpp.scoket.XmppConnection;
 import ousoftoa.com.xmpp.ui.view.UserInfoView;
+import ousoftoa.com.xmpp.utils.ImageUtil;
 import ousoftoa.com.xmpp.utils.RxUtils;
 import rx.Observable;
 
@@ -40,16 +39,19 @@ public class UserInfoPresenter extends BasePresenter {
                         , throwable -> mView.onError( throwable ) );
     }
 
-    public void setPortrait(ImageItem portrait) {
-        Observable.just( portrait.path )
+    public void setPortrait(String path) {
+        Observable.just( ImageUtil.getBase64StringFromFile( path ) )
                 .map( s -> {
-                    File file = new File( s );
-                    return file;
+                    VCard mvcar = new VCard();
+                    mvcar.setField( "avatar", s );
+                    return mvcar;
                 } )
-                .map( file -> XmppConnection.getInstance().changeImage( file ) )
+                .flatMap( vCard -> XmppConnection.getInstance().changeVcard( vCard ) )
                 .compose( RxUtils.applySchedulers( mView ) )
-                .subscribe( bitmap -> mView.onSetHeard( bitmap )
-                        , throwable -> mView.onError( throwable ) );
+                .subscribe( bitmap -> {
+                    EventBus.getDefault().post( new MessageEvent( "changeVcard", "" ) );
+                    getUserInfo();
+                }, throwable -> mView.onError( throwable ) );
     }
 
 }

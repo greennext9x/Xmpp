@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.lqr.audio.AudioPlayManager;
@@ -22,9 +23,17 @@ import java.util.List;
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.Constants;
+import ousoftoa.com.xmpp.model.bean.LocationData;
+import ousoftoa.com.xmpp.scoket.XmppConnection;
 import ousoftoa.com.xmpp.utils.DateUtil;
 import ousoftoa.com.xmpp.utils.ImageUtil;
+import ousoftoa.com.xmpp.utils.JsonUtil;
 import ousoftoa.com.xmpp.utils.UIUtils;
+import ousoftoa.com.xmpp.wight.bubble.BubbleImageView;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
 
 /**
  * Created by 韩莫熙 on 2017/4/20.
@@ -39,9 +48,12 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
 
     @Override
     protected void convert(BaseViewHolder helper, ChatItem item) {
+        if (item.inOrOut == 0)
+            setHead( helper, item.getUsername() );
+        else if (item.inOrOut == 1)
+            setHead( helper, null );
         setTime( helper, item, helper.getLayoutPosition() );
         setName( helper, item );
-        setHead( helper, item );
         setMsg( helper, item );
     }
 
@@ -69,29 +81,32 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
         }
     }
 
-    private void setHead(BaseViewHolder helper, ChatItem item) {
-        Bitmap headimg = ImageUtil.getBitmapFromBase64String( item.head );
-        if (headimg != null)
-            helper.setImageBitmap( R.id.ivAvatar, headimg );
-        else
-            helper.setImageResource( R.id.ivAvatar, R.mipmap.default_tp );
+    private void setHead(BaseViewHolder helper, String username) {
+        XmppConnection.getInstance().getUserImage( username )
+                .subscribeOn( Schedulers.io() )
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe( bitmap -> {
+                    if (bitmap != null)
+                        helper.setImageBitmap( R.id.ivAvatar, bitmap );
+                } );
     }
 
     private void setMsg(BaseViewHolder helper, ChatItem item) {
-        if (item.msg.contains( Constants.SAVE_IMG_PATH )) {
-            showBivPic( helper, item );
-        } else if (item.msg.contains( Constants.SAVE_SOUND_PATH )) {
-            showSound( helper, item );
-        } else if (item.msg.contains( "[/a0" )) {
-            showLocation( helper, item );
-        } else {
+        if (item.subject == null || item.subject.equals( Constants.SEND_TXT )) {
             showTxtMsg( helper, item );
+        } else if (item.subject.equals( Constants.SEND_IMG )) {
+            showBivPic( helper, item );
+        } else if (item.subject.equals( Constants.SEND_SOUND )) {
+            showSound( helper, item );
+        } else if (item.subject.equals( Constants.SEND_LOCATION )) {
+            showLocation( helper, item );
         }
     }
 
     private void showTxtMsg(BaseViewHolder helper, ChatItem item) {
         helper.setVisible( R.id.llSound, false )
                 .setVisible( R.id.tvText, true )
+                .setVisible( R.id.llLocation, false )
                 .setVisible( R.id.bivPic, false );
         TextView tvContent = helper.getView( R.id.tvText );
         tvContent.setText( item.msg );
@@ -99,14 +114,19 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
     }
 
     private void showLocation(BaseViewHolder helper, ChatItem item) {
+        LocationData mData = JsonUtil.jsonToObject( item.msg, LocationData.class );
         helper.setVisible( R.id.llSound, false )
                 .setVisible( R.id.tvText, false )
-                .setVisible( R.id.bivPic, false );
+                .setVisible( R.id.bivPic, false )
+                .setVisible( R.id.llLocation, true )
+                .setText( R.id.tvTitle, mData.getPoi() );
+        Glide.with( mContext ).load( mData.getImgUrl() ).into( (ImageView) helper.getView( R.id.ivLocation ) );
     }
 
     private void showSound(BaseViewHolder helper, ChatItem item) {
         helper.setVisible( R.id.llSound, true )
                 .setVisible( R.id.tvText, false )
+                .setVisible( R.id.llLocation, false )
                 .setVisible( R.id.bivPic, false );
         MediaPlayer mediaPlayer = new MediaPlayer();
         try {
@@ -120,7 +140,6 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
         ViewGroup.LayoutParams params = rlAudio.getLayoutParams();
         params.width = UIUtils.dip2Px( 65 ) + UIUtils.dip2Px( increment );
         rlAudio.setLayoutParams( params );
-
 
         helper.setOnClickListener( R.id.rlAudio, view -> {
             String path = item.msg;
@@ -159,12 +178,20 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
     private void showBivPic(BaseViewHolder helper, ChatItem item) {
         helper.setVisible( R.id.llSound, false )
                 .setVisible( R.id.tvText, false )
+                .setVisible( R.id.llLocation, false )
                 .setVisible( R.id.bivPic, true );
-        Bitmap headimg = ImageUtil.getBitmapFromBase64String( item.msg );
-        if (headimg != null) {
-            helper.setImageBitmap( R.id.bivPic, headimg );
-        } else {
-            helper.setImageResource( R.id.bivPic, R.mipmap.default_tp );
-        }
+        BubbleImageView imageView = helper.getView( R.id.bivPic );
+        Observable.create( (Observable.OnSubscribe<Bitmap>) subscriber -> {
+            Bitmap headimg = ImageUtil.getBitmapFromBase64String( item.msg );
+            if (headimg != null) {
+                subscriber.onNext( headimg );
+                subscriber.onCompleted();
+            } else {
+                subscriber.onError( new Throwable( "没有头像" ) );
+            }
+        } ).subscribeOn( Schedulers.io() )
+                .observeOn( AndroidSchedulers.mainThread() )
+                .subscribe( bitmap -> imageView.setImageBitmap( bitmap )
+                        , throwable -> imageView.setImageResource( R.mipmap.default_tp ) );
     }
 }

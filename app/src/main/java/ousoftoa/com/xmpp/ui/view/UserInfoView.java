@@ -1,7 +1,5 @@
 package ousoftoa.com.xmpp.ui.view;
 
-import android.graphics.Bitmap;
-
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import ousoftoa.com.xmpp.base.IBaseView;
@@ -12,5 +10,4 @@ import ousoftoa.com.xmpp.base.IBaseView;
 
 public interface UserInfoView extends IBaseView{
     void onNext(VCard vCard);
-    void onSetHeard(Bitmap bitmap);
 }

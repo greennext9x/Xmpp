@@ -1,21 +1,15 @@
 package ousoftoa.com.xmpp.utils;
 
 import android.annotation.TargetApi;
-import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-
-import java.util.List;
 
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.MyApplication;
@@ -26,29 +20,7 @@ import ousoftoa.com.xmpp.ui.activity.MainActivity;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MyAndroidUtil {
 	private static NotificationCompat.Builder builder = new NotificationCompat.Builder( MyApplication.getInstance().getContext());
-	/**
-	 * @param context
-	 * @param title
-	 * @param message
-	 * @param icon
-	 * @param okBtn
-	 * 没有取消功能的了
-	 */
-	public static void showDialog(Context context , String title, String message, int icon, DialogInterface.OnClickListener okBtn){
-		new AlertDialog.Builder(context)
-		.setTitle(title)
-		.setIcon(icon)
-		.setMessage(message)
-		.setPositiveButton("确定",okBtn)
-		.setNegativeButton("返回", null).show();
-	}
 
-	public static void clearNoti(){
-		NotificationManager manger = (NotificationManager) MyApplication.getInstance()
-				.getSystemService( Service.NOTIFICATION_SERVICE);
-		manger.cancelAll();   
-	}
-	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public static void showNoti(String notiMsg, String nickname){
 		//android推送
@@ -95,20 +67,5 @@ public class MyAndroidUtil {
 				hangIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 		builder.setContentIntent( hangPendingIntent );
 		notificationManager.notify(0, builder.build());
-	}
-
-	public static boolean isBackground(Context context) {
-		ActivityManager activityManager = (ActivityManager) context.getSystemService( Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
-		for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-			if (appProcess.processName.equals(context.getPackageName())) {
-				if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND) {
-					return true;
-				}else{
-					return false;
-				}
-			}
-		}
-		return false;
 	}
 }

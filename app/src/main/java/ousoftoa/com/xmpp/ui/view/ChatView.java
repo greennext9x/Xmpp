@@ -11,4 +11,6 @@ import ousoftoa.com.xmpp.model.bean.ChatItem;
 
 public interface ChatView extends IBaseView{
     void onNext(List<ChatItem> itemList);
+    void onSendFail();
+    void onRefreshNext(List<ChatItem> itemList);
 }

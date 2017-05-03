@@ -11,17 +11,24 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.view.RxView;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.BaseFragment;
+import ousoftoa.com.xmpp.model.bean.Constants;
 import ousoftoa.com.xmpp.model.bean.Friend;
+import ousoftoa.com.xmpp.model.bean.MessageEvent;
 import ousoftoa.com.xmpp.presenter.MePresenter;
+import ousoftoa.com.xmpp.scoket.XmppConnection;
 import ousoftoa.com.xmpp.ui.activity.LoginActivity;
 import ousoftoa.com.xmpp.ui.activity.UserInfoActivity;
 import ousoftoa.com.xmpp.ui.view.MeView;
+import ousoftoa.com.xmpp.utils.DataHelper;
 import ousoftoa.com.xmpp.utils.ImageUtil;
 
 /**
@@ -37,6 +44,11 @@ public class MeFragment extends BaseFragment<MePresenter> implements MeView {
     TextView mTvAccount;
     @Bind(R.id.llMyInfo)
     LinearLayout mLlMyInfo;
+
+    @Override
+    public boolean isEventBus() {
+        return true;
+    }
 
     @Override
     protected View initView(LayoutInflater inflater, ViewGroup container) {
@@ -62,6 +74,8 @@ public class MeFragment extends BaseFragment<MePresenter> implements MeView {
 
     @OnClick(R.id.oivout)
     public void onClick() {
+        DataHelper.SetBooleanSF( mContext, Constants.LOGIN_CHECK,false );
+        XmppConnection.getInstance().closeConnection();
         startActivity( new Intent( mContext, LoginActivity.class ) );
         getActivity().finish();
     }
@@ -76,5 +90,11 @@ public class MeFragment extends BaseFragment<MePresenter> implements MeView {
             mIvHeader.setImageBitmap( headimg );
         mTvName.setText( nickName );
         mTvAccount.setText( "坑聊号:" + username );
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void changefriend(MessageEvent event){
+        if (event.getTag().equals( "changeVcard" ))
+            mPresenter.getNowUserInfo();
     }
 }

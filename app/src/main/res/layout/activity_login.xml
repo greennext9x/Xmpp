@@ -19,14 +19,14 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="200px"
-        android:layout_height="200px"
+        android:layout_width="160px"
+        android:layout_height="160px"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:layout_marginTop="160px"
         android:background="@null"
         android:scaleType="centerCrop"
-        android:src="@mipmap/skin_about_brand"/>
+        android:src="@mipmap/icon_kengchat"/>
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -160,6 +160,13 @@
                 android:text="@string/login"
                 android:textColor="@color/color_ffffff"
                 android:textSize="36px"/>
+            <TextView
+                android:id="@+id/tVregister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="注册账号"
+                android:textColor="@color/black0"
+                android:layout_marginTop="20px"/>
         </com.zhy.autolayout.AutoLinearLayout>
 
     </ScrollView>

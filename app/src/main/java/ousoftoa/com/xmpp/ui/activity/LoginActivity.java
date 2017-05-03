@@ -19,8 +19,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.qiushui.blurredview.BlurredView;
 
 import butterknife.Bind;
@@ -36,7 +38,6 @@ import static ousoftoa.com.xmpp.R.id.btn_login;
 import static ousoftoa.com.xmpp.R.id.clean_password;
 import static ousoftoa.com.xmpp.R.id.iv_clean_phone;
 import static ousoftoa.com.xmpp.R.id.iv_show_pwd;
-
 
 public class LoginActivity extends BaseActivity<LoginPresenter> implements LoginView {
 
@@ -66,6 +67,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     BlurredView mBdBack;
     @Bind(R.id.btn_login)
     Button mBtnLogin;
+    @Bind(R.id.tVregister)
+    TextView mTVregister;
 
 
     private int screenHeight = 0;//屏幕高度
@@ -87,7 +90,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         if (isFullScreen( this )) {
             AndroidBug5497Workaround.assistActivity( this );
         }
-        mBdBack.setBlurredLevel(100);
+        mBdBack.setBlurredLevel( 100 );
         mBdBack.showBlurredView();
         StatusBarUtil.setTranslucent( this );
         screenHeight = this.getResources().getDisplayMetrics().heightPixels; //获取屏幕高度
@@ -140,7 +143,9 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         finish();
     }
 
-    private void initListener() {
+    private void initListener(){
+        RxView.clicks( mTVregister )
+                .subscribe( aVoid -> startActivity( new Intent( LoginActivity.this,RegisterActivity.class ) ) );
         mEtName.addTextChangedListener( new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

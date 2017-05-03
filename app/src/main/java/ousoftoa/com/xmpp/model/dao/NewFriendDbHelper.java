@@ -15,7 +15,10 @@ import ousoftoa.com.xmpp.utils.DateUtil;
 
 public class NewFriendDbHelper {
 	private static NewFriendDbHelper instance = null;
-	
+	private static final int DB_VERSION = 1;
+	private static final String DB_NAME = "newFiend";
+
+
 	private SqlLiteHelper helper;
 	private SQLiteDatabase db;  // 邀请我的
 	
@@ -37,8 +40,6 @@ public class NewFriendDbHelper {
 	
 	private class SqlLiteHelper extends SQLiteOpenHelper {
 
-		private static final int DB_VERSION = 1;
-		private static final String DB_NAME = "newFiend";
 
 		public SqlLiteHelper(Context context) {
 			super(context, DB_NAME, null, DB_VERSION);
@@ -73,12 +74,12 @@ public class NewFriendDbHelper {
 			values.put("username", username);
 			values.put("sendDate", DateUtil.getNow());
 			values.put("whos", Constants.USER_NAME);
-			db.insert(helper.DB_NAME, "id", values);
+			db.insert(DB_NAME, "id", values);
 		}
 		else{
 			values.put("sendDate", DateUtil.getNow());
 			values.put("isDeal", 0);
-			db.update(helper.DB_NAME, values, " username=? and whos=?", 
+			db.update(DB_NAME, values, " username=? and whos=?",
 					new String[]{username,Constants.USER_NAME});
 		}
 		NewMsgDbHelper.getInstance( MyApplication.getInstance().getContext()).saveNewMsg(""+0);
@@ -87,7 +88,7 @@ public class NewFriendDbHelper {
 	public void delFriend(String username){
 		ContentValues values = new ContentValues();
 		values.put("isDeal", 1);
-		db.update(helper.DB_NAME, values, " username=? and whos=?", 
+		db.update(DB_NAME, values, " username=? and whos=?",
 				new String[]{username,Constants.USER_NAME});
 	}
 
@@ -96,7 +97,7 @@ public class NewFriendDbHelper {
 	 */
 	public List<String> getNewFriend(){
 		List<String> friends = new ArrayList<String>();
-		String sql = "select username from " +helper.DB_NAME +
+		String sql = "select username from " +DB_NAME +
 				" where whos = ? order by sendDate desc";
 		Cursor cursor = db.rawQuery(sql, new String[]{Constants.USER_NAME});
 		while(cursor.moveToNext()){
@@ -109,7 +110,7 @@ public class NewFriendDbHelper {
 	//某个人
 	public int getCount(String username){
 		int count = 0 ;
-		String sql ="select count(0) from "+helper.DB_NAME+" where username=? and whos=?";
+		String sql ="select count(0) from "+DB_NAME+" where username=? and whos=?";
 		Cursor cursor = db.rawQuery(sql, new String[]{username,Constants.USER_NAME});
 		while(cursor.moveToNext()){
 			count = cursor.getInt(0);
@@ -121,7 +122,7 @@ public class NewFriendDbHelper {
 	//某个人是否已处理
 	public boolean isDeal(String username){
 		boolean isDeal = false ;
-		String sql ="select isDeal from "+helper.DB_NAME+" where username=? and whos=?";
+		String sql ="select isDeal from "+DB_NAME+" where username=? and whos=?";
 		Cursor cursor = db.rawQuery(sql, new String[]{username,Constants.USER_NAME});
 		while(cursor.moveToNext()){
 			if (cursor.getInt(0) == 0) {
@@ -137,6 +138,6 @@ public class NewFriendDbHelper {
 	
 	
 	public void clear(){
-		db.delete(helper.DB_NAME, "id>?", new String[]{"0"});
+		db.delete(DB_NAME, "id>?", new String[]{"0"});
 	}
 }

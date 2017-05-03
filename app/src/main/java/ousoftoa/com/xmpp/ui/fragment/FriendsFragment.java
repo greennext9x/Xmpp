@@ -26,4 +26,5 @@ public class FriendsFragment extends BaseFragment{
     protected void init() {
 
     }
+
 }

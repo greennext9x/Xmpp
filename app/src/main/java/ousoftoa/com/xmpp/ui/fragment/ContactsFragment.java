@@ -26,6 +26,7 @@ import cn.bingoogolapple.badgeview.BGABadgeView;
 import immortalz.me.library.TransitionsHeleper;
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.BaseFragment;
+import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.Friend;
 import ousoftoa.com.xmpp.model.bean.MessageEvent;
 import ousoftoa.com.xmpp.model.bean.MyContacts;
@@ -99,9 +100,14 @@ public class ContactsFragment extends BaseFragment<ContactsPresenter> implements
         mAdapter.setOnItemChildClickListener( (adapter, view, position) -> {
             switch (view.getId()){
                 case R.id.llcontent:
+                    ChatItem item = new ChatItem();
+                    item.setUsername( mData.get( position ).t.getUsername() );
+                    item.setChatType( 0 );
+                    item.setChatName( mData.get( position ).t.getUsername() );
+                    item.setNickName( mData.get( position ).t.getNickname() );
                     Intent chatintent = new Intent( mContext, ChatActivity.class );
-                    chatintent.putExtra( "chat",mData.get(position).t );
-                    startActivity( new Intent( chatintent ) );
+                    chatintent.putExtra( "chat",item );
+                    startActivity( chatintent );
                     break;
                 case R.id.ivHeader:
                     Intent headintent = new Intent( mContext, FriendInfoActivity.class );

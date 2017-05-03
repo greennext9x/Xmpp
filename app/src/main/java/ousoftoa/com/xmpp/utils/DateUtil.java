@@ -15,7 +15,6 @@ public class DateUtil {
 
 	/**
 	 * 得到仿微信日期格式输出
-	 *
 	 * @param msgTimeMillis
 	 * @return
 	 */

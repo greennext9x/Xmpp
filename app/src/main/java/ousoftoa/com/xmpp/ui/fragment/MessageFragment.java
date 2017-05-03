@@ -1,10 +1,13 @@
 package ousoftoa.com.xmpp.ui.fragment;
 
+import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.flyco.dialog.widget.NormalListDialog;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -17,7 +20,9 @@ import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.BaseFragment;
 import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.MessageEvent;
+import ousoftoa.com.xmpp.model.dao.MsgDbHelper;
 import ousoftoa.com.xmpp.presenter.MessagePresenter;
+import ousoftoa.com.xmpp.ui.activity.ChatActivity;
 import ousoftoa.com.xmpp.ui.adapter.MessageAdapter;
 import ousoftoa.com.xmpp.ui.view.MessageView;
 
@@ -32,6 +37,8 @@ public class MessageFragment extends BaseFragment<MessagePresenter> implements M
 
     private MessageAdapter mAdapter;
     private List<ChatItem> mData = new ArrayList<>();
+    private NormalListDialog dialog;
+    private int position;
 
     @Override
     protected View initView(LayoutInflater inflater, ViewGroup container) {
@@ -46,7 +53,34 @@ public class MessageFragment extends BaseFragment<MessagePresenter> implements M
     @Override
     protected void init() {
         initAdapter();
+        initDialog();
+        initListener();
         mPresenter.getMessge();
+    }
+
+    private void initDialog() {
+        dialog = new NormalListDialog( mContext,new String[]{"删除该聊天"} );
+        dialog.isTitleShow( false );
+        dialog.setOnOperItemClickL( (parent, view, position, id) -> {
+            MsgDbHelper.getInstance( mContext ).delChatMsg( mData.get( this.position ).chatName );
+            dialog.dismiss();
+            mPresenter.getMessge();
+        } );
+    }
+
+    private void initListener() {
+        mAdapter.setOnItemClickListener( (adapter, view, position) -> {
+            ChatItem item = mData.get( position );
+            item.msg  = "";
+            Intent intent = new Intent( mContext, ChatActivity.class );
+            intent.putExtra( "chat",item );
+            startActivity( intent );
+        } );
+        mAdapter.setOnItemLongClickListener( (adapter, view, position) -> {
+            this.position = position;
+            dialog.show();
+            return false;
+        } );
     }
 
     private void initAdapter() {

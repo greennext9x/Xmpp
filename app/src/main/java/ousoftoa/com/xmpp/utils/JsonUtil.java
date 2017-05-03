@@ -38,7 +38,7 @@ public class JsonUtil
 	public static <T> T jsonToObject(String json, Class<T> classOfT)
 	{
 		Gson gson = new Gson();
-		T object = (T) gson.fromJson(json, classOfT);
+		T object = gson.fromJson(json, classOfT);
 		return object;
 	}
 	
