@@ -623,11 +623,13 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra( "path" );
                     if (data.getBooleanExtra( "take_photo", true )) {
-                        File file = new File( path );
-                        File newFile = CompressHelper.getDefault( this ).compressToFile( file );
-                        //照片
-                        Observable.just( ImageUtil.getBase64StringFromFile( newFile.getPath() ) )
-                                .compose( RxUtils.bindToSchedulers( this ) )
+                        Observable.create( (Observable.OnSubscribe<String>) subscriber -> {
+                            File file = new File( path );
+                            File newFile = CompressHelper.getDefault( this ).compressToFile( file );
+                            String msg = ImageUtil.getBase64StringFromFile( newFile.getPath() );
+                            subscriber.onNext( msg );
+                            subscriber.onCompleted();
+                        } ).compose( RxUtils.bindToSchedulers( this ) )
                                 .subscribe( s -> mPresenter.sendMsg( Constants.SEND_IMG, s ) );
                     } else {
                         //小视频

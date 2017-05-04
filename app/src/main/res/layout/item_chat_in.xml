@@ -138,19 +138,26 @@
                 android:orientation="horizontal"
                 android:visibility="gone">
 
-                <com.zhy.autolayout.AutoRelativeLayout
+                <ousoftoa.com.xmpp.wight.bubble.BubbleLinearLayout
                     android:id="@+id/rlAudio"
-                    android:layout_width="130px"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/img_bubble_receive">
+                    android:gravity="center"
+                    app:angle="8dp"
+                    app:arrowHeight="8dp"
+                    app:arrowLocation="left"
+                    app:arrowPosition="14dp"
+                    app:arrowWidth="5dp"
+                    app:bubbleColor="@color/white">
 
                     <ImageView
                         android:id="@+id/ivAudio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
+                        android:layout_margin="20px"
                         android:background="@drawable/audio_animation_left_list"/>
-                </com.zhy.autolayout.AutoRelativeLayout>
+                </ousoftoa.com.xmpp.wight.bubble.BubbleLinearLayout>>
 
                 <TextView
                     android:id="@+id/tvDuration"

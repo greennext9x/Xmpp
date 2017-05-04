@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.text.style.ImageSpan;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -128,7 +128,7 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
                 .setVisible( R.id.llLocation, false )
                 .setVisible( R.id.bivPic, false );
         SoundData soundData = JsonUtil.jsonToObject( item.msg, SoundData.class );
-        RelativeLayout rlAudio = helper.setText( R.id.tvDuration, soundData.getDuration() + "''" ).getView( R.id.rlAudio );
+        LinearLayout rlAudio = helper.setText( R.id.tvDuration, soundData.getDuration() + "''" ).getView( R.id.rlAudio );
         int increment = (int) (UIUtils.getDisplayWidth() / 240 * soundData.getDuration());
         ViewGroup.LayoutParams params = rlAudio.getLayoutParams();
         params.width = UIUtils.dip2Px( 65 ) + UIUtils.dip2Px( increment );

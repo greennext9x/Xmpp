@@ -154,6 +154,7 @@
                     android:textColorLink="#666666"
                     android:textSize="24px"/>
             </com.zhy.autolayout.AutoLinearLayout>
+            >
 
             <com.zhy.autolayout.AutoLinearLayout
                 android:id="@+id/llSound"
@@ -168,20 +169,27 @@
                     android:layout_height="wrap_content"
                     android:text="6''"/>
 
-                <com.zhy.autolayout.AutoRelativeLayout
+                <ousoftoa.com.xmpp.wight.bubble.BubbleLinearLayout
                     android:id="@+id/rlAudio"
-                    android:layout_width="130px"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/img_bubble_send">
+                    android:gravity="center"
+                    app:angle="8dp"
+                    app:arrowHeight="8dp"
+                    app:arrowLocation="right"
+                    app:arrowPosition="14dp"
+                    app:arrowWidth="5dp"
+                    app:bubbleColor="@color/chat_green">
 
                     <ImageView
                         android:id="@+id/ivAudio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
+                        android:layout_margin="20px"
                         android:background="@drawable/audio_animation_right_list"/>
 
-                </com.zhy.autolayout.AutoRelativeLayout>
+                </ousoftoa.com.xmpp.wight.bubble.BubbleLinearLayout>
             </com.zhy.autolayout.AutoLinearLayout>
         </com.zhy.autolayout.AutoLinearLayout>
         <!-- 人物头像 -->

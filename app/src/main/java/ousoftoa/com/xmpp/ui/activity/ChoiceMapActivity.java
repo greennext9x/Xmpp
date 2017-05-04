@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.jakewharton.rxbinding.view.RxView;
 import com.tencent.lbssearch.TencentSearch;
 import com.tencent.lbssearch.httpresponse.BaseObject;
 import com.tencent.lbssearch.httpresponse.HttpResponseListener;
@@ -36,6 +38,7 @@ import com.tencent.tencentmap.mapsdk.map.TencentMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import ousoftoa.com.xmpp.R;
@@ -55,6 +58,8 @@ public class ChoiceMapActivity extends BaseActivity implements TencentLocationLi
     RecyclerView mRvPOI;
     @Bind(R.id.pb)
     ProgressBar mPb;
+    @Bind(R.id.im_back)
+    ImageView mImBack;
 
     private SensorManager mSensorManager;
     private Sensor mOritationSensor;
@@ -80,13 +85,13 @@ public class ChoiceMapActivity extends BaseActivity implements TencentLocationLi
     @Override
     protected void init() {
         initAdapter();
-        mBtnToolbarSend.setVisibility( View.VISIBLE);
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mOritationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        mLocationManager = TencentLocationManager.getInstance(this);
+        mBtnToolbarSend.setVisibility( View.VISIBLE );
+        mSensorManager = (SensorManager) getSystemService( SENSOR_SERVICE );
+        mOritationSensor = mSensorManager.getDefaultSensor( Sensor.TYPE_ORIENTATION );
+        mLocationManager = TencentLocationManager.getInstance( this );
         mLocationRequest = TencentLocationRequest.create();
         mTencentMap = mMap.getMap();
-        mTencentSearch = new TencentSearch(this);
+        mTencentSearch = new TencentSearch( this );
         requestLocationUpdate();
         initListener();
     }
@@ -94,62 +99,64 @@ public class ChoiceMapActivity extends BaseActivity implements TencentLocationLi
     private void initAdapter() {
         mRvPOI.setLayoutManager( new LinearLayoutManager( mContext ) );
         mAdapter = new ChoiceMapAdapter( mData );
-        mRvPOI.setAdapter(mAdapter);
-
+        mRvPOI.setAdapter( mAdapter );
     }
 
     private void initListener() {
+        RxView.clicks( mImBack )
+                .throttleFirst( 1, TimeUnit.SECONDS )
+                .subscribe( aVoid -> finish() );
         mAdapter.setOnItemClickListener( (adapter, view, position) -> {
             mSelectedPosi = position;
             mAdapter.setSelectedPosi( mSelectedPosi );
         } );
-        mBtnToolbarSend.setOnClickListener(v -> {
+        mBtnToolbarSend.setOnClickListener( v -> {
             if (mData != null && mData.size() > mSelectedPosi) {
-                Geo2AddressResultObject.ReverseAddressResult.Poi poi = mData.get(mSelectedPosi);
+                Geo2AddressResultObject.ReverseAddressResult.Poi poi = mData.get( mSelectedPosi );
                 Intent data = new Intent();
                 LocationData locationData = new LocationData();
                 locationData.setLat( String.valueOf( poi.location.lat ) );
                 locationData.setLng( String.valueOf( poi.location.lng ) );
                 locationData.setPoi( poi.title );
                 locationData.setImgUrl( getMapUrl( poi.location.lat, poi.location.lng ) );
-                data.putExtra("location", locationData);
-                this.setResult( Activity.RESULT_OK, data);
+                data.putExtra( "location", locationData );
+                this.setResult( Activity.RESULT_OK, data );
                 finish();
             }
-        });
-        mIbShowLocation.setOnClickListener(v -> requestLocationUpdate());
-        mTencentMap.setOnMapCameraChangeListener(new TencentMap.OnMapCameraChangeListener() {
+        } );
+        mIbShowLocation.setOnClickListener( v -> requestLocationUpdate() );
+        mTencentMap.setOnMapCameraChangeListener( new TencentMap.OnMapCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
                 if (myLocation != null)
-                    myLocation.setPosition(mTencentMap.getMapCenter());
+                    myLocation.setPosition( mTencentMap.getMapCenter() );
             }
 
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
                 if (accuracy != null) {
-                    accuracy.setCenter(mTencentMap.getMapCenter());
+                    accuracy.setCenter( mTencentMap.getMapCenter() );
                 }
-                search(mTencentMap.getMapCenter());
+                search( mTencentMap.getMapCenter() );
             }
-        });
+        } );
     }
 
     private void requestLocationUpdate() {
         //开启定位
-        int error = mLocationManager.requestLocationUpdates(mLocationRequest,this);
+        int error = mLocationManager.requestLocationUpdates( mLocationRequest, this );
         switch (error) {
             case 0:
-                Log.i( "debug", "requestLocationUpdate: "+"成功注册监听器" );
+                Log.i( "debug", "requestLocationUpdate: " + "成功注册监听器" );
                 break;
             case 1:
-                Log.i( "debug", "requestLocationUpdate: "+"设备缺少使用腾讯定位服务需要的基本条件" );
+                Log.i( "debug", "requestLocationUpdate: " + "设备缺少使用腾讯定位服务需要的基本条件" );
                 break;
             case 2:
-                Log.i( "debug", "requestLocationUpdate: "+"manifest 中配置的 key 不正确" );
+                Log.i( "debug", "requestLocationUpdate: " + "manifest 中配置的 key 不正确" );
                 break;
             case 3:
-                Log.i( "debug", "requestLocationUpdate: "+"自动加载libtencentloc.so失败" );
+                Log.i( "debug", "requestLocationUpdate: " + "自动加载libtencentloc.so失败" );
                 break;
         }
     }
@@ -165,19 +172,19 @@ public class ChoiceMapActivity extends BaseActivity implements TencentLocationLi
     }
 
     private void search(LatLng latLng) {
-        mPb.setVisibility(View.VISIBLE);
-        mRvPOI.setVisibility(View.GONE);
-        Location location = new Location().lat((float) latLng.getLatitude()).lng((float) latLng.getLongitude());
+        mPb.setVisibility( View.VISIBLE );
+        mRvPOI.setVisibility( View.GONE );
+        Location location = new Location().lat( (float) latLng.getLatitude() ).lng( (float) latLng.getLongitude() );
         //还可以传入其他坐标系的坐标，不过需要用coord_type()指明所用类型
         //这里设置返回周边poi列表，可以在一定程度上满足用户获取指定坐标周边poi的需求
         Geo2AddressParam geo2AddressParam = new Geo2AddressParam().
-                location(location).get_poi(true);
-        mTencentSearch.geo2address(geo2AddressParam, new HttpResponseListener() {
+                location( location ).get_poi( true );
+        mTencentSearch.geo2address( geo2AddressParam, new HttpResponseListener() {
 
             @Override
             public void onSuccess(int arg0, BaseObject arg1) {
-                mPb.setVisibility(View.GONE);
-                mRvPOI.setVisibility(View.VISIBLE);
+                mPb.setVisibility( View.GONE );
+                mRvPOI.setVisibility( View.VISIBLE );
                 if (arg1 == null) {
                     return;
                 }
@@ -187,32 +194,32 @@ public class ChoiceMapActivity extends BaseActivity implements TencentLocationLi
 
             @Override
             public void onFailure(int arg0, String arg1, Throwable arg2) {
-                mPb.setVisibility(View.GONE);
-                mRvPOI.setVisibility(View.VISIBLE);
+                mPb.setVisibility( View.GONE );
+                mRvPOI.setVisibility( View.VISIBLE );
             }
-        });
+        } );
     }
 
     @Override
     public void onLocationChanged(TencentLocation tencentLocation, int i, String s) {
         if (i == tencentLocation.ERROR_OK) {
-            LatLng latLng = new LatLng(tencentLocation.getLatitude(), tencentLocation.getLongitude());
+            LatLng latLng = new LatLng( tencentLocation.getLatitude(), tencentLocation.getLongitude() );
             if (myLocation == null) {
-                myLocation = mTencentMap.addMarker(new MarkerOptions().position(latLng).icon( BitmapDescriptorFactory.fromResource(R.mipmap.arm)).anchor(0.5f, 0.8f));
+                myLocation = mTencentMap.addMarker( new MarkerOptions().position( latLng ).icon( BitmapDescriptorFactory.fromResource( R.mipmap.arm ) ).anchor( 0.5f, 0.8f ) );
             }
             if (accuracy == null) {
-                accuracy = mTencentMap.addCircle(new CircleOptions().center(latLng).radius(tencentLocation.getAccuracy()).fillColor(0x440000ff).strokeWidth(0f));
+                accuracy = mTencentMap.addCircle( new CircleOptions().center( latLng ).radius( tencentLocation.getAccuracy() ).fillColor( 0x440000ff ).strokeWidth( 0f ) );
             }
-            myLocation.setPosition(latLng);
-            accuracy.setCenter(latLng);
-            accuracy.setRadius(tencentLocation.getAccuracy());
-            mTencentMap.animateTo(latLng);
-            mTencentMap.setZoom(16);
-            search(latLng);
+            myLocation.setPosition( latLng );
+            accuracy.setCenter( latLng );
+            accuracy.setRadius( tencentLocation.getAccuracy() );
+            mTencentMap.animateTo( latLng );
+            mTencentMap.setZoom( 16 );
+            search( latLng );
             //取消定位
-            mLocationManager.removeUpdates(this);
+            mLocationManager.removeUpdates( this );
         } else {
-            Log.i( "debug", "onLocationChanged: "+i );
+            Log.i( "debug", "onLocationChanged: " + i );
         }
     }
 
@@ -241,7 +248,7 @@ public class ChoiceMapActivity extends BaseActivity implements TencentLocationLi
             case STATUS_UNKNOWN:
                 break;
         }
-        Log.i( "debug", "onStatusUpdate: " + s + ", " + s1 + " " + desc);
+        Log.i( "debug", "onStatusUpdate: " + s + ", " + s1 + " " + desc );
     }
 
     private String getMapUrl(double x, double y) {
