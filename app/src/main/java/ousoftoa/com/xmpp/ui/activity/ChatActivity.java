@@ -22,6 +22,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.lcodecore.tkrefreshlayout.RefreshListenerAdapter;
 import com.lcodecore.tkrefreshlayout.TwinklingRefreshLayout;
+import com.lqr.audio.AudioPlayManager;
 import com.lqr.audio.AudioRecordManager;
 import com.lqr.audio.IAudioRecordListener;
 import com.lqr.emoji.EmotionKeyboard;
@@ -622,8 +623,10 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                 if (resultCode == RESULT_OK) {
                     String path = data.getStringExtra( "path" );
                     if (data.getBooleanExtra( "take_photo", true )) {
+                        File file = new File( path );
+                        File newFile = CompressHelper.getDefault( this ).compressToFile( file );
                         //照片
-                        Observable.just( getBase64StringFromFile( path ) )
+                        Observable.just( ImageUtil.getBase64StringFromFile( newFile.getPath() ) )
                                 .compose( RxUtils.bindToSchedulers( this ) )
                                 .subscribe( s -> mPresenter.sendMsg( Constants.SEND_IMG, s ) );
                     } else {
@@ -644,6 +647,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        AudioPlayManager.getInstance().stopPlay();
         NewMsgDbHelper.getInstance( this ).delNewMsg( mfriend.chatName );
         EventBus.getDefault().post( new MessageEvent( "ChatNewMsg", "" ) );
     }

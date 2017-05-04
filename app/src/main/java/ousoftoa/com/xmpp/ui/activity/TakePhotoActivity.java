@@ -32,21 +32,21 @@ public class TakePhotoActivity extends BaseActivity {
 
     @Override
     protected void init() {
-        mJCameraView = (JCameraView) findViewById(R.id.cameraview);
+        mJCameraView = (JCameraView) findViewById( R.id.cameraview );
         //(0.0.7+)设置视频保存路径（如果不设置默认为Environment.getExternalStorageDirectory().getPath()）
-        mJCameraView.setSaveVideoPath( Environment.getExternalStorageDirectory().getPath());
+        mJCameraView.setSaveVideoPath( Environment.getExternalStorageDirectory().getPath() );
         //(0.0.8+)设置手动/自动对焦，默认为自动对焦
-        mJCameraView.setAutoFoucs(false);
+        mJCameraView.setAutoFoucs( false );
         //设置小视频保存路径
-        File file = new File( Constants.SAVE_SOUND_PATH);
+        File file = new File( Constants.SAVE_SOUND_PATH );
         if (!file.exists())
             file.mkdirs();
-        mJCameraView.setSaveVideoPath(Constants.SAVE_SOUND_PATH);
+        mJCameraView.setSaveVideoPath( Constants.SAVE_SOUND_PATH );
         initListener();
     }
 
     private void initListener() {
-        mJCameraView.setCameraViewListener(new JCameraView.CameraViewListener() {
+        mJCameraView.setCameraViewListener( new JCameraView.CameraViewListener() {
             @Override
             public void quit() {
                 //返回按钮的点击时间监听
@@ -55,12 +55,11 @@ public class TakePhotoActivity extends BaseActivity {
 
             @Override
             public void captureSuccess(Bitmap bitmap) {
-                //获取到拍照成功后返回的Bitmap
-                String path = saveBitmap(bitmap, Constants.SAVE_IMG_PATH);
+                String path = saveBitmap( bitmap, Constants.SAVE_IMG_PATH + "/xmpp_" + SystemClock.currentThreadTimeMillis() + ".png" );
                 Intent data = new Intent();
-                data.putExtra("take_photo", true);
-                data.putExtra("path", path);
-                setResult(RESULT_OK, data);
+                data.putExtra( "take_photo", true );
+                data.putExtra( "path", path );
+                setResult( RESULT_OK, data );
                 finish();
             }
 
@@ -74,7 +73,7 @@ public class TakePhotoActivity extends BaseActivity {
 //                finish();
                 showTip( "暂时没有小视频功能" );
             }
-        });
+        } );
     }
 
     @Override
@@ -91,15 +90,16 @@ public class TakePhotoActivity extends BaseActivity {
             mJCameraView.onPause();
     }
 
-    public String saveBitmap(Bitmap bm, String dir) {
+    public String saveBitmap(Bitmap bm, String filePath) {
         String path = "";
-        File f = new File(dir, "XMPP_" + SystemClock.currentThreadTimeMillis() + ".png");
-        if (f.exists()) {
-            f.delete();
+        File f = new File( filePath );
+        if (!f.exists()) {
+            File file2 = new File( filePath.substring( 0, filePath.lastIndexOf( "/" ) + 1 ) );
+            file2.mkdirs();
         }
         try {
-            FileOutputStream out = new FileOutputStream(f);
-            bm.compress(Bitmap.CompressFormat.PNG, 100, out);
+            FileOutputStream out = new FileOutputStream( f );
+            bm.compress( Bitmap.CompressFormat.PNG, 100, out );
             out.flush();
             out.close();
             path = f.getAbsolutePath();
