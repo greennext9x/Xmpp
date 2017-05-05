@@ -632,7 +632,6 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
                         } ).compose( RxUtils.bindToSchedulers( this ) )
                                 .subscribe( s -> mPresenter.sendMsg( Constants.SEND_IMG, s ) );
                     } else {
-
                         //小视频
 //                        mPresenter.sendFileMsg(new File(path));
                     }
