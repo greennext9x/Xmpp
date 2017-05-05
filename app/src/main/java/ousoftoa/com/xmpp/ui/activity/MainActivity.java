@@ -134,7 +134,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         }
         mPagerAdapter = new MyPagerAdapter( getSupportFragmentManager(), mFragmentList, mTitles );
         mVp.setAdapter( mPagerAdapter );
-        mVp.setOffscreenPageLimit( 2 );
+        mVp.setOffscreenPageLimit( 3 );
         mTlCommon.setTabData( mTabEntities );
         mTlCommon.setOnTabSelectListener( new OnTabSelectListener() {
             @Override

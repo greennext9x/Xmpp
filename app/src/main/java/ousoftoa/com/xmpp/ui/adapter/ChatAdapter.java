@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.text.style.ImageSpan;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,14 +34,15 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static android.R.attr.path;
-
 
 /**
  * Created by 韩莫熙 on 2017/4/20.
  */
 
 public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHolder> {
+    private int position = -1;
+    private boolean isPlaying = false;
+
     public ChatAdapter(List<ChatItem> data) {
         super( data );
         addItemType( ChatItem.CHAT_IN, R.layout.item_chat_in );
@@ -131,42 +133,24 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
                 .setVisible( R.id.bivPic, false );
         SoundData soundData = JsonUtil.jsonToObject( item.msg, SoundData.class );
         LinearLayout rlAudio = helper.setText( R.id.tvDuration, soundData.getDuration() + "''" ).getView( R.id.rlAudio );
-        int increment = (int) (UIUtils.getDisplayWidth() / 240 * soundData.getDuration());
+        int increment = (int) (UIUtils.getDisplayWidth() / 300 * soundData.getDuration());
         ViewGroup.LayoutParams params = rlAudio.getLayoutParams();
-        params.width = UIUtils.dip2Px( 65 ) + UIUtils.dip2Px( increment );
+        params.width = UIUtils.dip2Px( 30 ) + UIUtils.dip2Px( increment );
         rlAudio.setLayoutParams( params );
 
         helper.setOnClickListener( R.id.rlAudio, view -> {
             String path = soundData.getPathname();
             final ImageView ivAudio = helper.getView( R.id.ivAudio );
             Uri uri = Uri.parse( path );
-            AudioPlayManager.getInstance().startPlay( mContext, uri, new IAudioPlayListener() {
-                @Override
-                public void onStart(Uri var1) {
-                    if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
-                        AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
-                        animation.start();
-                    }
-                }
-
-                @Override
-                public void onStop(Uri var1) {
-                    if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
-                        AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
-                        animation.stop();
-                        animation.selectDrawable( 0 );
-                    }
-                }
-
-                @Override
-                public void onComplete(Uri var1) {
-                    if (ivAudio != null && ivAudio.getBackground() instanceof AnimationDrawable) {
-                        AnimationDrawable animation = (AnimationDrawable) ivAudio.getBackground();
-                        animation.stop();
-                        animation.selectDrawable( 0 );
-                    }
-                }
-            } );
+            if (helper.getLayoutPosition() != position){
+                position = helper.getLayoutPosition();
+                playSound( uri,ivAudio );
+            }else {
+                if (isPlaying)
+                    AudioPlayManager.getInstance().stopPlay();
+                else
+                    playSound( uri,ivAudio );
+            }
         } );
     }
 
@@ -188,5 +172,37 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
                 .observeOn( AndroidSchedulers.mainThread() )
                 .subscribe( bitmap -> imageView.setImageBitmap( bitmap )
                         , throwable -> imageView.setImageResource( R.mipmap.default_tp ) );
+    }
+
+    private void playSound(Uri uri, View view){
+        AudioPlayManager.getInstance().startPlay( mContext, uri, new IAudioPlayListener() {
+            @Override
+            public void onStart(Uri var1) {
+                if (view != null && view.getBackground() instanceof AnimationDrawable) {
+                    AnimationDrawable animation = (AnimationDrawable) view.getBackground();
+                    animation.start();
+                    isPlaying = true;
+                }
+            }
+
+            @Override
+            public void onStop(Uri var1) {
+                if (view != null && view.getBackground() instanceof AnimationDrawable) {
+                    AnimationDrawable animation = (AnimationDrawable) view.getBackground();
+                    animation.stop();
+                    animation.selectDrawable( 0 );
+                    isPlaying = false;
+                }
+            }
+
+            @Override
+            public void onComplete(Uri var1) {
+                if (view != null && view.getBackground() instanceof AnimationDrawable) {
+                    AnimationDrawable animation = (AnimationDrawable) view.getBackground();
+                    animation.stop();
+                    animation.selectDrawable( 0 );
+                }
+            }
+        } );
     }
 }
