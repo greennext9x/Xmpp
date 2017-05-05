@@ -11,12 +11,13 @@ import android.support.v4.app.NotificationCompat;
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.MyApplication;
 import ousoftoa.com.xmpp.model.bean.Constants;
+import ousoftoa.com.xmpp.model.bean.IntentData;
 import ousoftoa.com.xmpp.ui.activity.MainActivity;
 
 public class MyAndroidUtil {
     private static NotificationCompat.Builder builder = new NotificationCompat.Builder( MyApplication.getInstance().getContext() );
 
-    public static void showNoti(String subject, String notiMsg, String nickname, Bitmap bitmap) {
+    public static void showNoti(int type, String subject, String notiMsg, String chatname, String nickname, Bitmap bitmap) {
         if (subject.equals( Constants.SEND_IMG ))
             builder.setContentText( "[图片]" );
         else if (subject.equals( Constants.SEND_SOUND ))
@@ -27,8 +28,13 @@ public class MyAndroidUtil {
             builder.setContentText( notiMsg );
 
         //设置点击跳转
+        IntentData intentData = new IntentData();
+        intentData.setType( type );
+        intentData.setChatname( chatname );
+        intentData.setNickname( nickname );
         Intent intent = new Intent();
         intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+        intent.putExtra( "noti", intentData );
         intent.setClass( MyApplication.getInstance(), MainActivity.class );
         NotificationManager notificationManager =
                 (NotificationManager) MyApplication.getInstance().getSystemService( Service.NOTIFICATION_SERVICE );

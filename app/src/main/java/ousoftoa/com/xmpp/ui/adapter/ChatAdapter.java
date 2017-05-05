@@ -33,6 +33,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static android.R.attr.path;
+
 
 /**
  * Created by 韩莫熙 on 2017/4/20.

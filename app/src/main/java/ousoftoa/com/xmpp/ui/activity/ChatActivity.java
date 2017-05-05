@@ -140,7 +140,7 @@ public class ChatActivity extends BaseActivity<ChatPresenter> implements ChatVie
         Intent intent = getIntent();
         mfriend = (ChatItem) intent.getSerializableExtra( "chat" );
         if (mfriend.chatType == ChatItem.CHAT) {
-            chatname = mfriend.username;
+            chatname = mfriend.chatName;
             title = mfriend.nickName;
         } else if (mfriend.chatType == ChatItem.GROUP_CHAT) {
             chatname = mfriend.chatName;

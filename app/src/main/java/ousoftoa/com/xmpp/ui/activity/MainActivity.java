@@ -18,7 +18,9 @@ import java.util.List;
 import butterknife.Bind;
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.BaseActivity;
+import ousoftoa.com.xmpp.model.bean.ChatItem;
 import ousoftoa.com.xmpp.model.bean.Constants;
+import ousoftoa.com.xmpp.model.bean.IntentData;
 import ousoftoa.com.xmpp.presenter.MainPresenter;
 import ousoftoa.com.xmpp.ui.adapter.MyPagerAdapter;
 import ousoftoa.com.xmpp.ui.adapter.TabEntity;
@@ -65,14 +67,31 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @Override
     protected void init() {
+        initToIntent();
+        initToolbar();
+        initCommonTablayout();
+        initLogin();
+    }
+
+    private void initToIntent() {
         if (!DataHelper.getBooleanSF( this, Constants.LOGIN_CHECK )) {
             startActivity( new Intent( this, LoginActivity.class ) );
             finish();
         }
-        initToolbar();
-        initCommonTablayout();
-        initLogin();
-
+        Constants.USER_NAME = DataHelper.getStringSF( this,Constants.LOGIN_ACCOUNT );
+        IntentData intentData = (IntentData) getIntent().getSerializableExtra( "noti" );
+        if (intentData != null){
+            if (intentData.getType() == ChatItem.CHAT || intentData.getType() == ChatItem.GROUP_CHAT){
+                ChatItem friend = new ChatItem();
+                friend.setNickName( intentData.getNickname() );
+                friend.setChatName( intentData.getChatname() );
+                Intent intent = new Intent( this,ChatActivity.class );
+                intent.putExtra( "chat", friend );
+                startActivity( intent );
+            }else if (intentData.getType() == ChatItem.FRIEND){
+                startActivity( new Intent( this,NewFriendActivity.class ) );
+            }
+        }
     }
 
     private void initToolbar() {

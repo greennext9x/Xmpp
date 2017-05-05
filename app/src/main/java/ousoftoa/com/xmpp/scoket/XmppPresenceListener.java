@@ -51,7 +51,7 @@ public class XmppPresenceListener implements StanzaListener {
                             nickName = userName;
                         }
                     }
-                    MyAndroidUtil.showNoti( "friend", nickName + "同意添加好友", nickName, head );
+                    MyAndroidUtil.showNoti( ChatItem.FRIEND, "friend", nickName + "同意添加好友", null, nickName, head );
                     ChatItem msg = new ChatItem( ChatItem.CHAT, "", userName, nickName, userName, userHead, userName + "同意添加好友", DateUtil.getNow(), 0 );
                     NewMsgDbHelper.getInstance( MyApplication.getInstance() ).saveNewMsg( userName );
                     MsgDbHelper.getInstance( MyApplication.getInstance() ).saveChatMsg( msg );
@@ -70,7 +70,7 @@ public class XmppPresenceListener implements StanzaListener {
                         }
                     }
                     XmppConnection.getInstance().changeFriend( friend, ItemType.from );
-                    MyAndroidUtil.showNoti( "friend", nickName + "申请添加您为好友", nickName, head );
+                    MyAndroidUtil.showNoti( ChatItem.FRIEND, "friend", nickName + "申请添加您为好友", null, nickName, head );
                     NewFriendDbHelper.getInstance( MyApplication.getInstance() ).saveNewFriend( XmppConnection.getUsername( jid ) );
                 }
             }

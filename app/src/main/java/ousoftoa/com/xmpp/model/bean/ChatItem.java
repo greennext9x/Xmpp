@@ -9,6 +9,8 @@ public class ChatItem implements Serializable,MultiItemEntity {
 	public static final int CHAT = 0; 
 	public static final int GROUP_CHAT = 1;
 	public static final int NOTI = 2;
+	public static final int FRIEND = 3;
+	public static final int GROUP = 4;
 	public static final int CHAT_IN = 0;
 	public static final int CHAT_OUT = 1;
 

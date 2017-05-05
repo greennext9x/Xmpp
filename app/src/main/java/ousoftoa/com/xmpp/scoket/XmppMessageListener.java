@@ -50,7 +50,7 @@ public class XmppMessageListener implements StanzaListener {
                 }
             }
             ChatItem msg = new ChatItem( ChatItem.NOTI, "", userName, nickName, userName, userHead, noti, DateUtil.getNow(), 0 );
-            MyAndroidUtil.showNoti( "group", noti, nickName, head );
+            MyAndroidUtil.showNoti( ChatItem.GROUP, "group", noti, null, nickName, head );
             NewMsgDbHelper.getInstance( MyApplication.getInstance() ).saveNewMsg( userName );
             MsgDbHelper.getInstance( MyApplication.getInstance() ).saveChatMsg( msg );
             EventBus.getDefault().post( new MessageEvent( "ChatNewMsg", "" ) );
@@ -102,9 +102,9 @@ public class XmppMessageListener implements StanzaListener {
                 ChatItem msg = null;
                 String msgBody = nowMessage.getBody();
                 String subject = nowMessage.getSubject();
-                if (subject.equals( Constants.SEND_SOUND )){
-                    SoundData soundData = JsonUtil.jsonToObject( msgBody,SoundData.class );
-                    FileUtil.saveFileByBase64( soundData.getMsg(),soundData.getPathname() );
+                if (subject.equals( Constants.SEND_SOUND )) {
+                    SoundData soundData = JsonUtil.jsonToObject( msgBody, SoundData.class );
+                    FileUtil.saveFileByBase64( soundData.getMsg(), soundData.getPathname() );
                 }
                 if (type == Message.Type.groupchat && XmppConnection.leaveRooms.contains( new Room( chatName ) )) {
                     System.out.println( "我已经离开这个房间了" );
@@ -121,7 +121,7 @@ public class XmppMessageListener implements StanzaListener {
                     String dateStr = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( date );
                     editor.putString( "time", dateStr );
                     editor.commit();
-                    MyAndroidUtil.showNoti( subject, msgBody, nickName, head );
+                    MyAndroidUtil.showNoti( chatType, subject, msgBody, chatName, nickName, head );
                 }
             }
         }
