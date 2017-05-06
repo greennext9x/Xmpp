@@ -18,6 +18,7 @@
     <color name="themebackgroup">#FC6E00</color>
     <!--tab标签栏文字的颜色-->
     <color name="colorTabText">#585858</color>
+    <color name="enabledText">#6C956E</color>
     <color name="white">#ffffff</color>
     <color name="line">#D2D2D2</color>
 

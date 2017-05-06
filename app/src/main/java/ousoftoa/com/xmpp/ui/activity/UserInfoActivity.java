@@ -12,6 +12,8 @@ import com.lqr.imagepicker.ui.ImageGridActivity;
 import com.lqr.optionitemview.OptionItemView;
 import com.nanchen.compresshelper.CompressHelper;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 import java.io.File;
@@ -22,10 +24,13 @@ import butterknife.Bind;
 import ousoftoa.com.xmpp.R;
 import ousoftoa.com.xmpp.base.BaseActivity;
 import ousoftoa.com.xmpp.model.bean.Constants;
+import ousoftoa.com.xmpp.model.bean.MessageEvent;
+import ousoftoa.com.xmpp.model.bean.UserInfoData;
 import ousoftoa.com.xmpp.presenter.UserInfoPresenter;
 import ousoftoa.com.xmpp.ui.view.UserInfoView;
 import ousoftoa.com.xmpp.utils.DataHelper;
 import ousoftoa.com.xmpp.utils.ImageUtil;
+import ousoftoa.com.xmpp.wight.dialog.CheckDialog;
 
 public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements UserInfoView {
     @Bind(R.id.llHeader)
@@ -48,6 +53,13 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
     OptionItemView mOivArea;
 
     public static final int REQUEST_IMAGE_PICKER = 1000;
+    private VCard mVCard;
+    private CheckDialog mCheckDialog;
+
+    @Override
+    public boolean isEventBus() {
+        return true;
+    }
 
     @Override
     protected void initView() {
@@ -69,10 +81,39 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
                     Intent intent = new Intent(this, ImageGridActivity.class);
                     startActivityForResult(intent, REQUEST_IMAGE_PICKER);
                 } );
+        RxView.clicks( mOivName )
+                .throttleFirst( 1,TimeUnit.SECONDS )
+                .subscribe( aVoid -> {
+                    UserInfoData infoData = new UserInfoData();
+                    infoData.setType( "nickName" );
+                    infoData.setTitle( "修改昵称" );
+                    Intent intent = new Intent( UserInfoActivity.this,ReviseActivity.class );
+                    intent.putExtra( "userinfo", infoData );
+                    startActivity( intent );
+                } );
+        RxView.clicks( mOivSignature )
+                .throttleFirst( 1,TimeUnit.SECONDS )
+                .subscribe( aVoid -> {
+                    UserInfoData infoData = new UserInfoData();
+                    infoData.setType( "signature" );
+                    infoData.setTitle( "修改签名" );
+                    Intent intent = new Intent( UserInfoActivity.this,ReviseActivity.class );
+                    intent.putExtra( "userinfo", infoData );
+                    startActivity( intent );
+                } );
+        RxView.clicks( mOivGender )
+                .throttleFirst( 1,TimeUnit.SECONDS )
+                .subscribe( aVoid -> {
+                    mCheckDialog.setData( mVCard.getField( "sex" ) )
+                    .setCheckListener( sex -> {
+                        mPresenter.setPortrait( mVCard,"sex",sex );
+                    } ).show();
+                } );
     }
 
     @Override
     protected void init() {
+        mCheckDialog = new CheckDialog( this );
         ImagePicker.getInstance().setMultiMode( false );
         initListener();
         mPresenter.getUserInfo();
@@ -80,6 +121,7 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
 
     @Override
     public void onNext(VCard vCard) {
+        mVCard = vCard;
         String userheard = vCard.getField( "avatar" );
         String username = DataHelper.getStringSF( this, Constants.LOGIN_ACCOUNT );
         String nikename = vCard.getField( "nickName" );
@@ -113,10 +155,17 @@ public class UserInfoActivity extends BaseActivity<UserInfoPresenter> implements
                             ImageItem imageItem = images.get(0);
                             File file = new File( imageItem.path );
                             File newFile = CompressHelper.getDefault(this).compressToFile(file);
-                            mPresenter.setPortrait(newFile.getPath());
+                            String msg = ImageUtil.getBase64StringFromFile( newFile.getPath() );
+                            mPresenter.setPortrait(mVCard,"avatar",msg);
                         }
                     }
                 }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void changefriend(MessageEvent event){
+        if (event.getTag().equals( "changeVcard" ))
+            mPresenter.getUserInfo();
     }
 }

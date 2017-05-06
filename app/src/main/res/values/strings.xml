@@ -20,4 +20,5 @@
     <string name="voice_rec">手指上滑，取消发送</string>
     <string name="voice_short">录音时间太短</string>
     <string name="voice_cancel">松开手指，取消发送</string>
+    <string name="change_my_name_tip">好名字可以让你的朋友 更容易记住你。</string>
 </resources>

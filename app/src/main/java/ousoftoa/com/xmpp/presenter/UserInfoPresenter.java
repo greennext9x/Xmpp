@@ -9,7 +9,6 @@ import ousoftoa.com.xmpp.base.BasePresenter;
 import ousoftoa.com.xmpp.model.bean.MessageEvent;
 import ousoftoa.com.xmpp.scoket.XmppConnection;
 import ousoftoa.com.xmpp.ui.view.UserInfoView;
-import ousoftoa.com.xmpp.utils.ImageUtil;
 import ousoftoa.com.xmpp.utils.RxUtils;
 import rx.Observable;
 
@@ -39,18 +38,15 @@ public class UserInfoPresenter extends BasePresenter {
                         , throwable -> mView.onError( throwable ) );
     }
 
-    public void setPortrait(String path) {
-        Observable.just( ImageUtil.getBase64StringFromFile( path ) )
-                .map( s -> {
-                    VCard mvcar = new VCard();
-                    mvcar.setField( "avatar", s );
-                    return mvcar;
-                } )
-                .flatMap( vCard -> XmppConnection.getInstance().changeVcard( vCard ) )
+    public void setPortrait(VCard mvacrd, String type, String msg) {
+        Observable.create( (Observable.OnSubscribe<VCard>) subscriber -> {
+            mvacrd.setField( type, msg );
+            subscriber.onNext( mvacrd );
+            subscriber.onCompleted();
+        } ).flatMap( vCard -> XmppConnection.getInstance().changeVcard( vCard ) )
                 .compose( RxUtils.applySchedulers( mView ) )
-                .subscribe( bitmap -> {
+                .subscribe( aBoolean -> {
                     EventBus.getDefault().post( new MessageEvent( "changeVcard", "" ) );
-                    getUserInfo();
                 }, throwable -> mView.onError( throwable ) );
     }
 
