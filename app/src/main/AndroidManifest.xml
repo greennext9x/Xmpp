@@ -109,6 +109,8 @@
             android:name=".ui.activity.ReviseActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".ui.activity.ShowBigImgActivity">
+        </activity>
     </application>
 
 </manifest>

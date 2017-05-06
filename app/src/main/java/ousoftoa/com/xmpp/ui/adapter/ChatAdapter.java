@@ -1,5 +1,6 @@
 package ousoftoa.com.xmpp.ui.adapter;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import ousoftoa.com.xmpp.model.bean.Constants;
 import ousoftoa.com.xmpp.model.bean.LocationData;
 import ousoftoa.com.xmpp.model.bean.SoundData;
 import ousoftoa.com.xmpp.scoket.XmppConnection;
+import ousoftoa.com.xmpp.ui.activity.ShowBigImgActivity;
 import ousoftoa.com.xmpp.utils.DateUtil;
 import ousoftoa.com.xmpp.utils.ImageUtil;
 import ousoftoa.com.xmpp.utils.JsonUtil;
@@ -172,6 +174,11 @@ public class ChatAdapter extends BaseMultiItemQuickAdapter<ChatItem, BaseViewHol
                 .observeOn( AndroidSchedulers.mainThread() )
                 .subscribe( bitmap -> imageView.setImageBitmap( bitmap )
                         , throwable -> imageView.setImageResource( R.mipmap.default_tp ) );
+        helper.setOnClickListener( R.id.bivPic, view -> {
+            Intent intent = new Intent( mContext,ShowBigImgActivity.class );
+            intent.putExtra( "showbigimg",item.msg );
+            mContext.startActivity( intent );
+        } );
     }
 
     private void playSound(Uri uri, View view){
